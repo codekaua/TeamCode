@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sobre Nós</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', path='Pasta_css/style_sobre.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <!-- Header -->
+    <main id="container_main">
+      <header id="container_header">
+        <div class="inline left-header">
+          <a href="/"><h2>BolsasBR</h2></a>
+          <a href="/produtos">Loja</a>
+          <a href="/sobre">Sobre</a>
+          <form action="">
+            <label for="pesquisar"
+              ><img
+                class="icones"
+                src="/static/uploads/icons_header/lupa.png"
+                alt=""
+            /></label>
+            <input type="text" id="pesquisar" placeholder="Pesquisar" />
+          </form>
+        </div>
+        <div class="inline right-header">
+          {% if usuario %}
+          <a href=""
+            ><img src="/static/uploads/icons_header/coracao.png" alt=""
+          /></a>
+          <a href="/meus-pedidos" class="carrinho-icon">
+            <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+            <span id="contador-carrinho" class="badge">0</span>
+          </a>
+          <div class="perfil-menu-container">
+            <img
+              id="foto-perfil"
+              src="/static/uploads/icons_header/img-perfil.png"
+              alt="imagem de perfil"
+              onclick="toggleMenu()"
+            />
+
+            <div id="menu-perfil" class="popup-menu">
+              <a href="/me/dados">Meus Dados</a>
+              <a href="/me/pedidos">Meus Pedidos</a>
+              <a href="/logout">Sair</a>
+            </div>
+          </div>
+
+          <script>
+            function toggleMenu() {
+              const menu = document.getElementById("menu-perfil");
+              menu.style.display =
+                menu.style.display === "block" ? "none" : "block";
+            }
+
+            // Fecha o menu se clicar fora
+            window.onclick = function (event) {
+              const menu = document.getElementById("menu-perfil");
+              const foto = document.getElementById("foto-perfil");
+              if (
+                !foto.contains(event.target) &&
+                !menu.contains(event.target)
+              ) {
+                menu.style.display = "none";
+              }
+            };
+          </script>
+          {% else %}
+          <a href=""
+            ><img src="/static/uploads/icons_header/coracao.png" alt=""
+          /></a>
+          <a href="/meus-pedidos" class="carrinho-icon">
+            <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+            <span id="contador-carrinho" class="badge">0</span>
+          </a>
+          <a href="/login">Login</a>
+          {% endif %}
+        </div>
+      </header>
+
+      <!-- Seção Sobre Nós -->
+      <section class="sobre-nos">
+        <div class="container-sobre">
+          <h2>SOBRE NÓS</h2>
+
+          <div class="imagem-sobre">
+            <img
+              src="/static/uploads/bolsas/bolsa_sobre.webp"
+              alt="Imagem sobre nós"
+            />
+          </div>
+
+          <div class="texto-sobre">
+            <p>
+              Criada para mulheres que vivem a moda com autenticidade, nossa
+              marca nasceu com o propósito de oferecer bolsas que vão além do
+              acessório: são peças que expressam estilo, acompanham a rotina e
+              valorizam cada detalhe do seu dia.
+            </p>
+            <p>
+              Unimos design, funcionalidade e qualidade em coleções que seguem
+              as principais tendências da moda, sem abrir mão da versatilidade.
+              São modelos pensados para diferentes momentos — do trabalho à
+              ocasião especial — sempre com atenção à praticidade e à elegância.
+            </p>
+            <p>
+              Cada bolsa é desenvolvida com cuidado, pensando na mulher moderna
+              que busca peças que traduzam sua personalidade, com sofisticação e
+              originalidade.
+            </p>
+          </div>
+
+          <div class="ajuda">
+            <h3>PODEMOS AJUDAR VOCÊ?</h3>
+            <p>
+              Descubra tudo o que você precisa saber sobre o universo Gucci com
+              um
+              <br />consultor de clientes.
+            </p>
+          </div>
+        </div>
+      </section>
+      <!-- Footer -->
+      <footer class="footer-newsletter">
+        <div class="footer-container">
+          <!-- Newsletter -->
+          <div class="newsletter-section">
+            <h2>Inscreva-se na nossa newsletter</h2>
+            <p>
+              Seja o primeiro a saber sobre nossas ofertas especiais,<br />lançamentos
+              de novos produtos e eventos
+            </p>
+            <form class="newsletter-form">
+              <input type="email" placeholder="Adicionar Email" required />
+              <button type="submit">Inscrever-se</button>
+            </form>
+          </div>
+
+          <!-- Links -->
+          <div class="footer-links">
+            <div class="footer-column">
+              <h3>Comprar</h3>
+              <a href="#">Mulheres</a>
+              <a href="#">Cartões-presente</a>
+              <a href="#">Oferta</a>
+            </div>
+            <div class="footer-column">
+              <h3>Ajuda</h3>
+              <a href="#">Central de Ajuda</a>
+              <a href="#">Status do pedido</a>
+              <a href="#">Tabela de tamanhos</a>
+              <a href="#">Devoluções e Garantia</a>
+              <a href="#">Contate-nos</a>
+            </div>
+            <div class="footer-column">
+              <h3>Sobre</h3>
+              <a href="#">Sobre nós</a>
+              <a href="#">Responsabilidade</a>
+              <a href="#">Tecnologia e Inovação</a>
+              <a href="#">Explore nossas histórias</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
+  </body>
+</html>

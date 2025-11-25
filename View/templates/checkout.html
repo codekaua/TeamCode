@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Ecommerce</title>
+    <link rel="stylesheet" href="style_checkout.css" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', path='Pasta_css/style_checkout3.css') }}"
+    />
+    <link rel="stylesheet" href="/static/Pasta_css/style_checkout2.css" />
+    <!-- FONTE PADRÃO DO SITE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header id="container_header">
+      <div class="inline left-header">
+        <a href="/"><h2>BolsasBR</h2></a>
+        <a href="/produtos">Loja</a>
+        <a href="/sobre">Sobre</a>
+        <form action="">
+          <label for="pesquisar"
+            ><img
+              class="icones"
+              src="/static/uploads/icons_header/lupa.png"
+              alt=""
+          /></label>
+          <input type="text" id="pesquisar" placeholder="Pesquisar" />
+        </form>
+      </div>
+      <div class="inline right-header">
+        {% if usuario %}
+        <a href=""
+          ><img src="/static/uploads/icons_header/coracao.png" alt=""
+        /></a>
+        <a href="/meus-pedidos" class="carrinho-icon">
+          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+          <span id="contador-carrinho" class="badge">0</span>
+        </a>
+        <div class="perfil-menu-container">
+          <img
+            id="foto-perfil"
+            src="/static/uploads/icons_header/img-perfil.png"
+            alt="imagem de perfil"
+            onclick="toggleMenu()"
+          />
+
+          <div id="menu-perfil" class="popup-menu">
+            <a href="/me/dados">Meus Dados</a>
+            <a href="/me/pedidos">Meus Pedidos</a>
+            <a href="/logout">Sair</a>
+          </div>
+        </div>
+
+        <script>
+          function toggleMenu() {
+            const menu = document.getElementById("menu-perfil");
+            menu.style.display =
+              menu.style.display === "block" ? "none" : "block";
+          }
+
+          // Fecha o menu se clicar fora
+          window.onclick = function (event) {
+            const menu = document.getElementById("menu-perfil");
+            const foto = document.getElementById("foto-perfil");
+            if (!foto.contains(event.target) && !menu.contains(event.target)) {
+              menu.style.display = "none";
+            }
+          };
+        </script>
+        {% else %}
+        <a href=""
+          ><img src="/static/uploads/icons_header/coracao.png" alt=""
+        /></a>
+        <a href="/meus-pedidos" class="carrinho-icon">
+          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+          <span id="contador-carrinho" class="badge">0</span>
+        </a>
+        <a href="/login">Login</a>
+        {% endif %}
+      </div>
+    </header>
+
+    <main class="checkout">
+      <section class="form-section">
+        <h1>Checkout</h1>
+        <div class="steps">
+          <strong>Endereço</strong> <span>——</span> Envio
+          <span>——</span> Pagamento
+        </div>
+
+        <h3 class="info_envio">Informações de envio</h3>
+        <form action="">
+          <!-- enviar comandos nesse form -->
+          <div class="row">
+            <input type="text" placeholder="Primeiro Nome" />
+            <input type="text" placeholder="Segundo Nome" />
+          </div>
+          <div class="row">
+            <input
+              type="text"
+              name="cep"
+              id="cep"
+              maxlength="8"
+              placeholder="CEP"
+            />
+            <select name="estado">
+              <option value="">Selecione um estado</option>
+              <option value="AC">Acre</option>
+              <option value="AL">Alagoas</option>
+              <option value="AP">Amapá</option>
+              <option value="AM">Amazonas</option>
+              <option value="BA">Bahia</option>
+              <option value="CE">Ceará</option>
+              <option value="DF">Distrito Federal</option>
+              <option value="ES">Espírito Santo</option>
+              <option value="GO">Goiás</option>
+              <option value="MA">Maranhão</option>
+              <option value="MT">Mato Grosso</option>
+              <option value="MS">Mato Grosso do Sul</option>
+              <option value="MG">Minas Gerais</option>
+              <option value="PA">Pará</option>
+              <option value="PB">Paraíba</option>
+              <option value="PR">Paraná</option>
+              <option value="PE">Pernambuco</option>
+              <option value="PI">Piauí</option>
+              <option value="RJ">Rio de Janeiro</option>
+              <option value="RN">Rio Grande do Norte</option>
+              <option value="RS">Rio Grande do Sul</option>
+              <option value="RO">Rondônia</option>
+              <option value="RR">Roraima</option>
+              <option value="SC">Santa Catarina</option>
+              <option value="SP">São Paulo</option>
+              <option value="SE">Sergipe</option>
+              <option value="TO">Tocantins</option>
+            </select>
+            <input type="text" name="bairro" placeholder="Bairro" />
+          </div>
+          <input type="text" name="logradouro" placeholder="Rua" />
+          <input type="text" name="endereco" placeholder="Endereço" />
+          <input type="text" placeholder="Apartamento, suite, etc (opcional)" />
+          <input type="text" placeholder="Opcional" />
+          <label>
+            <input type="checkbox" /> Salvar informações de contato
+          </label>
+          <!-- <a href="index(Entrega).html" class="botao-continuar"
+            >Continuar para envio</a
+          > -->
+          <button type="button" id="btnCalcularFrete">Calcular Frete</button>
+        </form>
+        <div id="resultadoFrete" style="display: none; margin-top: 10px">
+          <p><b>Endereço:</b> <span id="endereco"></span></p>
+          <p><b>Frete:</b> R$ <span id="valor_frete"></span></p>
+          <p><b>Prazo:</b> <span id="prazo"></span> dias</p>
+        </div>
+      </section>
+
+      {% if pedidos %}
+      <aside class="cart-section">
+        <h3 class="info_envio">Seu produto</h3>
+        <input
+          class="cupom"
+          type="text"
+          placeholder="Insira o código do cupom aqui"
+        />
+        {% for i in pedidos %}
+        <hr />
+        <div class="summary">
+          <p>Pedido <span>{{i.id}}</span></p>
+          <p>Nome <span>{{i.nome}}</span></p>
+          <p>
+            <strong>Total</strong>
+            <span><strong>{{ i.total }}</strong></span>
+          </p>
+          <form action="/carrinho/remover/{{i.id}}" method="post">
+            <button class="remover_pedido" type="submit">
+              remover o pedido
+            </button>
+          </form>
+        </div>
+        {% endfor %}
+        <p>Subtotal <span id="subtotal">R$ {{ total_geral + 15 }}</span></p>
+      </aside>
+      {% endif %}
+    </main>
+    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
+    <script>
+      // 1 Adiciona um "ouvinte" de evento (event listener) ao botão com id="btnCalcularFrete"
+      // Ou seja, quando o botão for clicado, o código dentro da função será executado.
+      document
+        .getElementById("btnCalcularFrete")
+        .addEventListener("click", async () => {
+          // 2 Pega o valor do campo de CEP (input com id="cep")
+          const cep = document.getElementById("cep").value.trim(); // trim() remove espaços extras
+
+          // 3 Verifica se o CEP tem exatamente 8 dígitos
+          if (cep.length !== 8) {
+            alert("Digite um CEP válido com 8 dígitos."); // Exibe alerta caso seja inválido
+            return; // Sai da função (não continua)
+          }
+
+          try {
+            // 4 Busca o token do usuário no armazenamento local (salvo no navegador)
+            // Isso serve para autenticação — o mesmo que usar um token JWT no header.
+            const token = localStorage.getItem("token");
+
+            // 5 Faz a requisição para o backend (sem recarregar a página)
+            // O `fetch` é o equivalente em JS ao `requests.get()` em Python.
+            const response = await fetch(`/api/frete?cep_destino=${cep}`, {
+              headers: { Authorization: `Bearer ${token}` }, // Envia o token no cabeçalho
+            });
+
+            // 6 Se a resposta não for 200 (OK), lança erro
+            if (!response.ok) throw new Error("Erro ao consultar o frete.");
+
+            // 7 Converte o JSON da resposta em um objeto JavaScript
+            // É como usar `response.json()` no Python requests.
+            const data = await response.json();
+
+            // 8 Torna a área de resultado visível
+            document.getElementById("resultadoFrete").style.display = "block";
+
+            // 9 Atualiza as informações visuais com o retorno do backend
+            document.getElementById("endereco").innerText = data.endereco;
+            document.getElementById("valor_frete").innerText =
+              data.valor_frete.toFixed(2);
+            document.getElementById("prazo").innerText =
+              data.prazo_estimado_dias;
+
+            // 10 Atualiza o valor total do pedido (subtotal + frete)
+            const subtotal = parseFloat(
+              document.getElementById("subtotal").innerText
+            );
+            const total = subtotal + data.valor_frete;
+            document.getElementById("total").innerText = total.toFixed(2);
+
+            // 11 Atualiza os campos ocultos do formulário HTML
+            // Assim, quando o usuário clicar em “Finalizar Compra”, o backend receberá tudo.
+            document.getElementById("cepHidden").value = cep;
+            document.getElementById("enderecoHidden").value = data.endereco;
+            document.getElementById("freteHidden").value =
+              data.valor_frete.toFixed(2);
+            document.getElementById("totalHidden").value = total.toFixed(2);
+          } catch (error) {
+            // 12 Caso aconteça qualquer erro (problema de rede, API, etc.)
+            // alert("Erro ao calcular o frete. Tente novamente.");
+          }
+        });
+    </script>
+  </body>
+</html>

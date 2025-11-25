@@ -1,0 +1,296 @@
+/* Reset básico */
+* { 
+    margin: 0;
+    padding: 0;
+    font-family: "Open Sans", sans-serif;
+}
+
+body {
+  background-color: #f2f3f7;
+  color: #111;
+}
+
+#container_header {
+    position: relative;   /* referência para os filhos */
+    margin: 0 auto;
+    width: 100%;
+    height: 50px;         /* altura fixa do header */
+    padding: 15px;
+    background-color: #000;
+    border-bottom: 1px solid #fff;
+}
+
+/* links em linha */
+.inline {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+}
+
+/* bloco da esquerda */
+.left-header {
+    position: absolute;
+    top: 15px;
+    left: 80px;  /* você pode mudar esse valor */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.left-header h2 {
+    font-size: 25px;
+    line-height: 1.6;
+    color: white;
+}
+
+.left-header a {
+    font-size: 17px;
+    text-decoration: none;
+    font-weight: 500;
+    color: white;
+}
+
+/* pesquisa */
+#pesquisar {
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+/* bloco da direita */
+.right-header {
+    position: absolute;
+    top: 25px;
+    right: 80px;  /* você pode mudar esse valor */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.right-header form input {
+    border: none;
+}
+
+.right-header a {
+    font-size: 17px;
+    text-decoration: none;
+    font-weight: 500;
+    color: white;
+}
+
+.icones {
+    width: 25px;
+}
+
+/* estilização do icone user -----------------*/
+#foto-perfil {
+  margin-left: 15px;
+  width: 40px;
+  border-radius: 50%;       
+  object-fit: cover;        
+  transition: box-shadow 0.5s ease;
+}
+
+#foto-perfil:hover {
+  box-shadow: 0 0 0 5px #ffffff;
+  box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.5);
+}
+
+.perfil-menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Menu pop-up */
+.popup-menu {
+    display: none; /* escondido por padrão */
+    position: absolute;
+    right: 0; /* alinha à direita da foto de perfil */
+    background-color: #fff;
+    min-width: 160px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    z-index: 10;
+}
+
+/* Links do menu */
+.popup-menu a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Hover nos links */
+.popup-menu a:hover {
+    background-color: #f1f1f1;
+}
+/* -------------------- */
+
+/* Container principal */
+.container {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px 80px;
+  gap: 40px;
+}
+
+/* Carrinho */
+.cart {
+  flex: 2;
+}
+
+.cart h2 {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.cart p {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+#cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cart-item {
+  display: flex;
+  gap: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+
+.cart-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+.cart-item-details {
+  flex: 1;
+}
+
+.cart-item-details h4 {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.cart-item-details p {
+  font-size: 14px;
+  color: #555;
+}
+
+.cart-item-details .price {
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.cart-item-details .remove {
+  color: #000;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 5px;
+  display: inline-block;
+}
+
+/* Informações do pedido */
+.order-info {
+  margin-top: 30px;
+}
+
+.order-info h3 {
+  margin-bottom: 15px;
+}
+
+.accordion div {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Resumo do pedido */
+.summary {
+  flex: 1;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.summary h3 {
+  margin-bottom: 20px;
+}
+
+.summary input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.line.total {
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 15px;
+}
+
+/* Botões */
+.summary a button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  background-color: #000;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Hover nos botões */
+.summary a button:hover {
+  background-color: #333;
+}
+
+/*  */
+
+.carrinho-icon {
+  position: relative;
+  display: inline-block;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.badge {
+  position: absolute;
+  top: -17px;
+  right: -10px;
+  background: #ff4747;
+  color: white;
+  border-radius: 40%;
+  padding: 5px 3px;
+  font-size: 15px;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}

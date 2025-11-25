@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Administração - LaVeraBags</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', path='Pasta_css/style_admin.css') }}"
+    />
+    <!-- FONTE PADRÃO DO SITE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <!-- Header -->
+
+    <header id="container_header">
+      <div class="inline left-header">
+        <a href=""><h2>BolsasBR</h2></a>
+      </div>
+      <div class="inline right-header">
+        {% if usuario %}
+        <div class="perfil-menu-container">
+          <img
+            id="foto-perfil"
+            src="/static/uploads/icons_header/img-perfil.png"
+            alt="imagem de perfil"
+            onclick="toggleMenu()"
+          />
+
+          <div id="menu-perfil" class="popup-menu">
+            <a href="/me/dados_admin">Meus Dados</a>
+            <a href="/logout">Sair</a>
+          </div>
+        </div>
+
+        <script>
+          function toggleMenu() {
+            const menu = document.getElementById("menu-perfil");
+            menu.style.display =
+              menu.style.display === "block" ? "none" : "block";
+          }
+
+          // Fecha o menu se clicar fora
+          window.onclick = function (event) {
+            const menu = document.getElementById("menu-perfil");
+            const foto = document.getElementById("foto-perfil");
+            if (!foto.contains(event.target) && !menu.contains(event.target)) {
+              menu.style.display = "none";
+            }
+          };
+        </script>
+        {% else %}
+        <a href=""
+          ><img src="/static/uploads/icons_header/coracao.png" alt=""
+        /></a>
+        <a href="/meus-pedidos" class="carrinho-icon">
+          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+          <span id="contador-carrinho" class="badge">0</span>
+        </a>
+        <a href="/login">Login</a>
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="fundo_preto">
+        <div class="caixa_fundo_preto">
+          <h2 class="titulo">Página Administrador</h2>
+          <p class="subtitulo">
+            Renove sua presença com bolsas que celebram tanto a <br />
+            modernidade quanto a tradição da verdadeira elegância.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-container">
+      <!-- Admin Info Card -->
+      <div class="admin-info">
+        <img
+          id="adminCardImg"
+          src="/static/uploads/icons_header/img-perfil.png"
+          alt="Admin"
+        />
+        <div>
+          <h3 id="adminCardName">{{usuario.nome}}</h3>
+          <p>Email: <span id="adminCardEmail">{{usuario.email}}</span></p>
+          <p>Membro desde: <span id="adminCardDate">Janeiro de 2024</span></p>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-top">
+            <div>
+              <p class="stat-label">Acessos do Site</p>
+              <p class="stat-value" id="stat-visits">12,458</p>
+            </div>
+            
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div>
+              <p class="stat-label">Total de Clientes</p>
+              <p class="stat-value" id="stat-clients">1,847</p>
+            </div>
+            
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div>
+              <p class="stat-label">Produtos Ativos</p>
+              <p class="stat-value" id="stat-products">156</p>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Management -->
+      <div class="product-management">
+        <h3>Gerenciar Produtos</h3>
+        <div class="management-buttons">
+          <a href="/admin/produto" class="btn btn-black"
+            >Adicionar Produto</a
+          >
+          <a
+            href="/admin/produto-deletar"
+            class="btn btn-red"
+            >Deletar Produto</a
+          >
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', path='js/admin_script.js') }}"></script>
+  </body>
+</html>

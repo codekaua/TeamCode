@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="style_home.css" /> -->
+    <link rel="icon" href="/static/uploads/bolsa-de-mulher.png">
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', path='Pasta_css/style_home2.css') }}"
+    />
+    <!-- bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+
+    <!-- FONTE PADRÃO DO SITE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+    <title>Home - LaVeraBags</title>
+  </head>
+  <body>
+    <!-- Header -->
+    <main id="container_main">
+      <header id="container_header">
+        <div class="inline left-header">
+          <a href="/"><h2>BolsasBR</h2></a>
+          <a href="/produtos">Loja</a>
+          <a href="/sobre">Sobre</a>
+          <form action="">
+            <label for="pesquisar"
+              ><img
+                class="icones"
+                src="/static/uploads/icons_header/lupa.png"
+                alt=""
+            /></label>
+            <input type="text" id="pesquisar" placeholder="Pesquisar" />
+          </form>
+        </div>
+        <div class="inline right-header">
+          {% if usuario %}
+            <a href=""
+              ><img src="/static/uploads/icons_header/coracao.png" alt=""
+            /></a>
+            <a href="/meus-pedidos" class="carrinho-icon">
+              <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+              <span id="contador-carrinho" class="badge">0</span>
+            </a>
+            <div class="perfil-menu-container">
+              <img
+                id="foto-perfil"
+                src="/static/uploads/icons_header/img-perfil.png"
+                alt="imagem de perfil"
+                onclick="toggleMenu()"
+              />
+
+              <div id="menu-perfil" class="popup-menu">
+                <a href="/me/dados">Meus Dados</a>
+                <a href="/me/pedidos">Meus Pedidos</a>
+                <a href="/logout">Sair</a>
+              </div>
+            </div>
+
+            <script>
+              function toggleMenu() {
+                const menu = document.getElementById("menu-perfil");
+                menu.style.display =
+                  menu.style.display === "block" ? "none" : "block";
+              }
+
+              // Fecha o menu se clicar fora
+              window.onclick = function (event) {
+                const menu = document.getElementById("menu-perfil");
+                const foto = document.getElementById("foto-perfil");
+                if (
+                  !foto.contains(event.target) &&
+                  !menu.contains(event.target)
+                ) {
+                  menu.style.display = "none";
+                }
+              };
+            </script>
+          {% else %}
+            <a href=""
+              ><img src="/static/uploads/icons_header/coracao.png" alt=""
+            /></a>
+            <a href="/meus-pedidos" class="carrinho-icon">
+              <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+              <span id="contador-carrinho" class="badge">0</span>
+            </a>
+            <a href="/login">Login</a>
+          {% endif %}
+        </div>
+      </header>
+
+      <!----------------------- Topo -------------------------->
+      <section id="Topo">
+        <div class="container_topo">
+          <div class="txt_topo">
+            <h2>Bolsas que carregam muito mais<br />que estilo.</h2>
+            <p>
+              Elegância não está nos detalhes, mas no que você leva<br />consigo.
+            </p>
+            <a href="" class="botao">Ver Mais</a>
+          </div>
+          <div class="img_topo">
+            <h2>Mais que um acessório</h2>
+          </div>
+        </div>
+      </section>
+
+      <!-- Meio -->
+      <section id="Meio">
+        <div class="container_meio">
+          <div class="txt_meio">
+            <h2>Nossas últimas novidades</h2>
+            <p>
+              Longe de ser apenas um objeto, a bolsa guarda segredos,
+              <br />sustenta histórias e acompanha cada passo da elegância
+              contemporânea.
+            </p>
+            <a href="" class="botao">Comprar</a>
+          </div>
+          <div class="img_meio">
+            <div class="imagens_meio img_meio1">
+              <img
+                src="/static/uploads/img_meio/img1.jpg"
+                class="opacidade"
+                alt=""
+              />
+            </div>
+            <div class="imagens_meio img_meio2">
+              <img
+                src="/static/uploads/img_meio/meio2.webp"
+                class="opacidade"
+                alt=""
+              />
+            </div>
+            <div class="imagens_meio img_meio3">
+              <img
+                src="/static/uploads/img_meio/meio3.webp"
+                class="opacidade"
+                alt=""
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bolsa-section">
+        <div class="container">
+          <!-- Coluna Esquerda: Modelo com bolsa -->
+          <div class="coluna-esquerda">
+            <img
+              src="/static/uploads/img_baixo/Pricipal_baixo.jpg"
+              alt="Modelo com bolsa"
+            />
+          </div>
+
+          <!-- Coluna Direita: Bolsas individuais -->
+          <div class="coluna-direita">
+            <div class="bolsa-item bolsa_1">
+              <img src="/static/uploads/img_baixo/bolsa_1.avif" alt="Bolsa 1" />
+            </div>
+            <div class="bolsa-item">
+              <img src="/static/uploads/img_baixo/bolsa_2.avif" alt="Bolsa 2" />
+            </div>
+            <div class="bolsa-item bolsa_3">
+              <img src="/static/uploads/img_baixo/bolsa_3.avif" alt="Bolsa 3" />
+            </div>
+            <div class="bolsa-item bolsa_4">
+              <img src="/static/uploads/img_baixo/bolsa_4.avif" alt="Bolsa 4" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Botão -->
+        <div class="ver-mais">
+          <button>Ver Mais</button>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer-newsletter">
+        <div class="footer-container">
+          <!-- Newsletter -->
+          <div class="newsletter-section">
+            <h2>Inscreva-se na nossa newsletter</h2>
+            <p>
+              Seja o primeiro a saber sobre nossas ofertas especiais,<br />lançamentos
+              de novos produtos e eventos
+            </p>
+            <form class="newsletter-form">
+              <input type="email" placeholder="Adicionar Email" required />
+              <button type="submit">Inscrever-se</button>
+            </form>
+          </div>
+
+          <!-- Links -->
+          <div class="footer-links">
+            <div class="footer-column">
+              <h3>Comprar</h3>
+              <a href="#">Mulheres</a>
+              <a href="#">Cartões-presente</a>
+              <a href="#">Oferta</a>
+            </div>
+            <div class="footer-column">
+              <h3>Ajuda</h3>
+              <a href="#">Central de Ajuda</a>
+              <a href="#">Status do pedido</a>
+              <a href="#">Tabela de tamanhos</a>
+              <a href="#">Devoluções e Garantia</a>
+              <a href="#">Contate-nos</a>
+            </div>
+            <div class="footer-column">
+              <h3>Sobre</h3>
+              <a href="#">Sobre nós</a>
+              <a href="#">Responsabilidade</a>
+              <a href="#">Tecnologia e Inovação</a>
+              <a href="#">Explore nossas histórias</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
+  </body>
+</html>

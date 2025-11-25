@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Página do Produto</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', path='Pasta_css/style_produto.css') }}"
+    />
+    <!-- bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <!-- FONTE PADRÃO DO SITE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- Header -->
+    <main id="container_main">
+      <header id="container_header">
+        <div class="inline left-header">
+          <a href="/"><h2>BolsasBR</h2></a>
+          <a href="/produtos">Loja</a>
+          <a href="/sobre">Sobre</a>
+          <form action="">
+            <label for="pesquisar"
+              ><img
+                class="icones"
+                src="/static/uploads/icons_header/lupa.png"
+                alt=""
+            /></label>
+            <input type="text" id="pesquisar" placeholder="Pesquisar" />
+          </form>
+        </div>
+        <div class="inline right-header">
+          {% if usuario %}
+            <a href=""
+              ><img src="/static/uploads/icons_header/coracao.png" alt=""
+            /></a>
+            <a href="/meus-pedidos" class="carrinho-icon">
+              <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+              <span id="contador-carrinho" class="badge">0</span>
+            </a>
+            <div class="perfil-menu-container">
+              <img
+                id="foto-perfil"
+                src="/static/uploads/icons_header/img-perfil.png"
+                alt="imagem de perfil"
+                onclick="toggleMenu()"
+              />
+
+              <div id="menu-perfil" class="popup-menu">
+                <a href="/me/dados">Meus Dados</a>
+                <a href="/me/pedidos">Meus Pedidos</a>
+                <a href="/logout">Sair</a>
+              </div>
+            </div>
+
+            <script>
+              function toggleMenu() {
+                const menu = document.getElementById("menu-perfil");
+                menu.style.display =
+                  menu.style.display === "block" ? "none" : "block";
+              }
+
+              // Fecha o menu se clicar fora
+              window.onclick = function (event) {
+                const menu = document.getElementById("menu-perfil");
+                const foto = document.getElementById("foto-perfil");
+                if (
+                  !foto.contains(event.target) &&
+                  !menu.contains(event.target)
+                ) {
+                  menu.style.display = "none";
+                }
+              };
+            </script>
+          {% else %}
+            <a href=""
+              ><img src="/static/uploads/icons_header/coracao.png" alt=""
+            /></a>
+            <a href="/meus-pedidos" class="carrinho-icon">
+              <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+              <span id="contador-carrinho" class="badge">0</span>
+            </a>
+            <a href="/login">Login</a>
+          {% endif %}
+        </div>
+      </header>
+      <div class="produto-container">
+        <!-- Galeria de imagens -->
+        <div class="produto-imagens">
+          <div class="grid-imagens">
+            <img
+              src="/static/uploads/bolsas/{{produto.detalhe1}}"
+              alt="detal1"
+            />
+            <img
+              src="/static/uploads/bolsas/{{produto.detalhe2}}"
+              alt="detal2"
+            />
+            <img
+              src="/static/uploads/bolsas/{{produto.detalhe3}}"
+              alt="detal3"
+            />
+            <img
+              src="/static/uploads/bolsas/{{produto.detalhe4}}"
+              alt="detal4"
+            />
+          </div>
+        </div>
+
+        <!-- Informações do produto -->
+        <div class="produto-info">
+          <h1 class="produto-nome">{{produto.nome}}</h1>
+          <p class="produto-preco">{{produto.preco}}</p>
+          <p class="parcelamento">ou 4x de R$ 6.725 sem juros</p>
+
+          <!-- Cores -->
+          <div class="produto-cores">
+            <p>Cor:</p>
+            <span class="cor" style="background-color: #d28c5c"></span>
+            <span class="cor" style="background-color: #000"></span>
+          </div>
+
+          <!-- Quantidade -->
+          <div class="produto-quantidade">
+            <p>Quantidade:</p>
+            <div class="quantidade-controle">
+              <button type="button" id="diminuir">-</button>
+              <input
+                type="text"
+                id="quantidade"
+                name="quantidade"
+                value="1"
+                readonly
+              />
+              <button type="button" id="aumentar">+</button>
+            </div>
+          </div>
+
+          <!-- Botão -->
+        {% if not carrinho %}
+          <form
+            id="form-carrinho"
+            action="/carrinho/adicionar/{{produto.id}}"
+            method="post"
+          >
+            <input
+              type="hidden"
+              name="quantidade"
+              id="quantidade-hidden"
+              value="1"
+            />
+            <button type="submit" class="btn-comprar">Adicionar ao carrinho</button>
+          </form>
+        {% else %}
+          <p style="color: #333; margin-top: 20px;">
+            Você já tem um item no carrinho.<br>
+            <a style="padding: 10px;" href="/carrinho" class="btn btn-dark mt-2">Ir para o carrinho</a>
+          </p>
+        {% endif %}
+
+          <!-- <button class="btn-comprar">Adicionar ao carrinho</button> qnd apertar nesse botão terá que adicionar o produto (por meio do id) lá no carrinho.html e se eu entrar e sair de lá terá que estar lá até o usuario desidir deletar -->
+
+          <!-- Links extras -->
+          <div class="produto-links">
+            <a href="#">Frete padrão grátis</a>
+            <a href="#">Devoluções gratuitas</a>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      const btnMais = document.getElementById("aumentar");
+      const btnMenos = document.getElementById("diminuir");
+      const inputQtd = document.getElementById("quantidade");
+      const inputHidden = document.getElementById("quantidade-hidden");
+
+      btnMais.addEventListener("click", () => {
+        let qtd = parseInt(inputQtd.value);
+        if (qtd < 99) {
+          // limite opcional
+          inputQtd.value = qtd + 1;
+          inputHidden.value = inputQtd.value;
+        }
+      });
+
+      btnMenos.addEventListener("click", () => {
+        let qtd = parseInt(inputQtd.value);
+        if (qtd > 1) {
+          inputQtd.value = qtd - 1;
+          inputHidden.value = inputQtd.value;
+        }
+      });
+    </script>
+    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
+  </body>
+</html>

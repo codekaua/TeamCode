@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carrinho</title>
+    <link rel="stylesheet" href="style_carrinho3.css" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', path='Pasta_css/style_carrinho3.css') }}"
+    />
+  </head>
+  <body>
+    <header id="container_header">
+      <div class="inline left-header">
+        <a href="/"><h2>BolsasBR</h2></a>
+        <a href="/produtos">Loja</a>
+        <a href="/sobre">Sobre</a>
+        <form action="">
+          <label for="pesquisar"
+            ><img
+              class="icones"
+              src="/static/uploads/icons_header/lupa.png"
+              alt=""
+          /></label>
+          <input type="text" id="pesquisar" placeholder="Pesquisar" />
+        </form>
+      </div>
+      <div class="inline right-header">
+        {% if usuario %}
+        <a href=""
+          ><img src="/static/uploads/icons_header/coracao.png" alt=""
+        /></a>
+        <a href="/meus-pedidos" class="carrinho-icon">
+          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+          <span id="contador-carrinho" class="badge">0</span>
+        </a>
+        <div class="perfil-menu-container">
+          <img
+            id="foto-perfil"
+            src="/static/uploads/icons_header/img-perfil.png"
+            alt="imagem de perfil"
+            onclick="toggleMenu()"
+          />
+
+          <div id="menu-perfil" class="popup-menu">
+            <a href="/me/dados">Meus Dados</a>
+            <a href="/me/pedidos">Meus Pedidos</a>
+            <a href="/logout">Sair</a>
+          </div>
+        </div>
+
+        <script>
+          function toggleMenu() {
+            const menu = document.getElementById("menu-perfil");
+            menu.style.display =
+              menu.style.display === "block" ? "none" : "block";
+          }
+
+          // Fecha o menu se clicar fora
+          window.onclick = function (event) {
+            const menu = document.getElementById("menu-perfil");
+            const foto = document.getElementById("foto-perfil");
+            if (!foto.contains(event.target) && !menu.contains(event.target)) {
+              menu.style.display = "none";
+            }
+          };
+        </script>
+        {% else %}
+        <a href=""
+          ><img src="/static/uploads/icons_header/coracao.png" alt=""
+        /></a>
+        <a href="/meus-pedidos" class="carrinho-icon">
+          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+          <span id="contador-carrinho" class="badge">0</span>
+        </a>
+        <a href="/login">Login</a>
+        {% endif %}
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="cart">
+        <h2>Seu Carrinho</h2>
+        <p>Confira seus pedidos e finalize a compra.</p>
+
+        <div id="cart-items"></div>
+
+        <div class="order-info">
+          <h3>Informações do Pedido</h3>
+          <div class="accordion">
+            <div>Política de Devolução <span>+</span></div>
+            <div>Opções de Envio <span>+</span></div>
+            <div>Política de Pagamento <span>+</span></div>
+          </div>
+        </div>
+      </div>
+
+      {% if carrinho %}
+      <!-- {% for item in carrinho %} -->
+      <div class="summary">
+        <h3>Resumo do Pedido</h3>
+        <input type="text" placeholder="Código do Cupom" />
+        <div class="line">
+          <span>Subtotal</span><span id="subtotal">R$ {{ total }}</span>
+        </div>
+        <div class="line">
+          <span>Quantidade</span><span>{{ item["quantidade"] }}</span>
+        </div>
+        <div class="line total">
+          <span>Total</span><span id="total">R$ {{ total }}</span>
+        </div>
+        <form action="/checkout" method="post">
+          <button type="submit">Prosseguir com a compra</button>
+        </form>
+        <!-- <form action="/carrinho/remover/{{item.id}}" method="post">
+            <button type="submit" class="btn btn-danger">Remover</button>
+          </form> -->
+      </div>
+      <!-- {% endfor %} -->
+      {% else %}
+      <p>Seu carrinho está vazio.</p>
+      {% endif %}
+    </div>
+    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
+    <!-- <script src="script.js"></script> -->
+  </body>
+</html>

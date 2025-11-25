@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="style_cadastro.css" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', path='Pasta_css/style_cadastro.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="cadastro_container">
+      <div class="background-image"></div>
+      <!-- Imagem de fundo -->
+      <div class="cadastro_box">
+        <h2>Bem-vindo</h2>
+        <p>Cadastre em sua conta</p>
+        <button class="social-login fb">
+          <i class="fab fa-facebook-f"></i>
+          <span>Continue com o Facebook</span>
+        </button>
+        <button class="social-login google">
+          <i class="fab fa-google"></i>
+          <span>Continue com o Google</span>
+        </button>
+        <button class="social-login email">
+          <i class="fas fa-envelope"></i>
+          <span>Continue com o Email</span>
+        </button>
+        <div id="mensagem" class="mensagem"></div>
+        <form action="/register" method="post">
+          <input type="text" placeholder="Nome" name="nome" id="" />
+          <input type="email" placeholder="Email" name="email" required />
+          <input type="password" placeholder="Senha" name="senha" required />
+          <button type="submit">Cadastrar</button>
+        </form>
+      </div>
+    </div>
+    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
+    <script>
+      const form = document.querySelector("form");
+      const mensagemDiv = document.getElementById("mensagem");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const resposta = await fetch("/register", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (
+          resposta.headers.get("content-type")?.includes("application/json")
+        ) {
+          const data = await resposta.json();
+          mostrarMensagem(data.mensagem, "erro");
+        } else if (resposta.redirected) {
+          mostrarMensagem("Cadastro realizado com sucesso!", "sucesso");
+          setTimeout(() => {
+            window.location.href = resposta.url;
+          }, 1000);
+        }
+      });
+
+      function mostrarMensagem(texto, tipo) {
+        mensagemDiv.textContent = texto;
+        mensagemDiv.className = `mensagem ${tipo}`;
+        mensagemDiv.classList.add("animar");
+
+        // Remove animação após 1s
+        setTimeout(() => {
+          mensagemDiv.classList.remove("animar");
+        }, 1000);
+      }
+    </script>
+  </body>
+</html>
