@@ -193,7 +193,7 @@ async def login(
 
     if usuario.is_admin:
         token = criar_token({"sub": usuario.email, "is_admin": True})
-        destino = "/me/dados_admin"
+        destino = "/admin/dados"
     else:
         token = criar_token({"sub": usuario.email})
         addVisita = Visita(visita = usuario.id)
@@ -238,25 +238,6 @@ def listar_dados(request: Request, db: Session = Depends(get_db)):
     admin = db.query(Usuario).filter(Usuario.is_admin)
     
     return templates.TemplateResponse('perfil_user.html', { 
-        'request': request,
-        'usuario': usuario,
-        'admin': admin
-    })
-# ----- Dados admin  -----
-@router.get("/me/dados_admin", response_class=HTMLResponse)
-def listar_dados(request: Request, db: Session = Depends(get_db)):
-    token = request.cookies.get("token")
-    if not token:
-        return RedirectResponse(url="/login", status_code=303)
-    payload = verificar_token(token)
-    if not payload:
-        return RedirectResponse(url="/login", status_code=303)
-    
-    email = payload.get("sub")
-    usuario = db.query(Usuario).filter(Usuario.email == email).first()
-    admin = db.query(Usuario).filter(Usuario.is_admin)
-    
-    return templates.TemplateResponse('perfil_admin.html', { 
         'request': request,
         'usuario': usuario,
         'admin': admin
@@ -471,115 +452,6 @@ async def remover_carrinho(request: Request, id_item: int, db: Session = Depends
         db.commit()
         return RedirectResponse(url="/produtos", status_code=303)
 
-
-# ----- Página Admin -----
-
-@router.get("/admin")
-def admin(request: Request, db: Session = Depends(get_db)):
-    usuario = None
-    token = request.cookies.get("token")
-
-    if token:
-        payload = verificar_token(token)
-        if payload:
-            email = payload.get("sub")
-            usuario = db.query(Usuario).filter(Usuario.email == email).first()
-            
-    usuarios = db.query(Usuario).all()
-    numerosUsuarios = len(usuarios)
-
-    produtos = db.query(Produto).all()
-    numeroProdutos = len(produtos)
-
-    total_acessos = db.query(Visita).count() 
-
-    return templates.TemplateResponse("admin.html", {"request": request, "usuario":usuario, "usuarios":numerosUsuarios, "produtos":numeroProdutos, "acessos": total_acessos})
-
-# -----   -----
-
-# ----- Página Admin Produto -----
-
-@router.get('/admin/produto', response_class=HTMLResponse)
-async def listar_admin(request:Request, db:Session=Depends(get_db)):
-    usuario = None
-    token = request.cookies.get("token")
-
-    if token:
-        payload = verificar_token(token)
-        if payload:
-            email = payload.get("sub")
-            usuario = db.query(Usuario).filter(Usuario.email == email).first()
-    return templates.TemplateResponse('admin-produto.html', {'request':request, 'usuario':usuario})
-
-# -----   -----
-
-# ----- Página Admin Produto Deletar -----
-
-@router.get('/admin/produto-deletar', response_class=HTMLResponse)
-async def listar_admin_produto_deletar(request:Request, db:Session=Depends(get_db)):
-    usuario = None
-    token = request.cookies.get("token")
-
-    if token:
-        payload = verificar_token(token)
-        if payload:
-            email = payload.get("sub")
-            usuario = db.query(Usuario).filter(Usuario.email == email).first()
-    produtos = db.query(Produto).all()
-    return templates.TemplateResponse('admin-produto-deletar.html', {
-        'request': request,
-        'produtos': produtos,
-        'usuario':usuario
-    })
-
-# -----   -----
-@router.post("/admin/produto")
-def criar_produto(
-    request:Request,
-    nome:str=Form(...),
-    preco:float=Form(...),
-    quantidade:int=Form(...),
-    categoria:str=Form(...),
-    cor:str=Form(...),
-    imagem:UploadFile=File(...),
-    detalhe1: UploadFile | None = File(None),
-    detalhe2: UploadFile | None = File(None),
-    detalhe3: UploadFile | None = File(None),
-    detalhe4: UploadFile | None = File(None),
-    db:Session=Depends(get_db)
-):
-    # Gera caminho completo para salvar a imagem principal
-    caminho_arquivo = os.path.join(UPLOAD_DIR, imagem.filename)
-
-    # Salva o arquivo
-    with open(caminho_arquivo, "wb") as arquivo:
-        shutil.copyfileobj(imagem.file, arquivo)
-        
-    novo_produto = Produto(
-        nome=nome,
-        preco=preco,
-        quantidade=quantidade,
-        categoria=categoria,
-        cor=cor,
-        imagem=imagem.filename,
-        detalhe1=detalhe1.filename if detalhe1 else "",
-        detalhe2=detalhe2.filename if detalhe2 else "",
-        detalhe3=detalhe3.filename if detalhe3 else "",
-        detalhe4=detalhe4.filename if detalhe4 else ""
-    )
-    db.add(novo_produto)
-    db.commit()
-    db.refresh(novo_produto)
-    return RedirectResponse(url="/admin/produto",status_code=303)
-
-@router.post("/admin/produto-deletar/{id}")
-def deletar_produto(id:int,db:Session=Depends(get_db)):
-    produto=db.query(Produto).filter(Produto.id==id).first()
-    if produto:
-        db.delete(produto)
-        db.commit()
-    return RedirectResponse(url="/admin/produto-deletar",status_code=303)
-
 @router.get("/logout")
 def logout():
     response = RedirectResponse(url="/produtos", status_code=302)
@@ -627,3 +499,158 @@ def calcular_frete(
         "prazo_estimado_dias":prazo_estimado,
         "status":"Simulação concluída"
     }
+
+#########################
+
+   
+
+# ----- Rotas Admin -----------------------------------------------------------
+
+def verificarUser(token, db):
+    if not token:
+        return None, None, None
+    
+    payload = verificar_token(token)
+    if not payload:
+        return None, None, None
+    
+    email = payload.get("sub")
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+    admin = db.query(Usuario).filter(Usuario.is_admin)
+
+    # Se não é admin → retorna None
+    if not usuario or not usuario.is_admin:
+        return None, None, None
+
+    return email, usuario, admin
+
+
+# ----- Dados do admin  -----
+@router.get("/admin/dados", response_class=HTMLResponse)
+def listar_dados(request: Request, db: Session = Depends(get_db)):
+
+    token = request.cookies.get("token")
+    email, usuario, admin = verificarUser(token, db)
+
+    if not usuario:
+        return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
+    
+    return templates.TemplateResponse('perfil_admin.html', { 
+        'request': request,
+        'usuario': usuario,
+        'admin': admin
+    })
+
+# ----- Página home admin -----
+
+@router.get("/admin")
+def admin(request: Request, db: Session = Depends(get_db)):
+
+    token = request.cookies.get("token")
+    email, usuario, admin = verificarUser(token, db)
+
+    if not usuario:
+        return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
+    
+    usuarios = db.query(Usuario).all()
+    numerosUsuarios = len(usuarios)
+
+    produtos = db.query(Produto).all()
+    numeroProdutos = len(produtos)
+
+    total_acessos = db.query(Visita).count() 
+
+    return templates.TemplateResponse("admin.html", {"request": request, "usuario":usuario, "usuarios":numerosUsuarios, "produtos":numeroProdutos, "acessos": total_acessos})
+
+# ----- Página Admin Produto -----
+
+@router.get('/admin/produto', response_class=HTMLResponse)
+async def listar_admin(request:Request, db:Session=Depends(get_db)):
+
+    token = request.cookies.get("token")
+    email, usuario, admin = verificarUser(token, db)
+
+    if not usuario:
+        return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
+
+    return templates.TemplateResponse('admin-produto.html', {'request':request})
+
+
+# ----- Página Admin Produto Deletar -----
+
+@router.get('/admin/delete', response_class=HTMLResponse)
+async def listar_admin_produto_deletar(request:Request, db:Session=Depends(get_db)):
+
+    token = request.cookies.get("token")
+    email, usuario, admin = verificarUser(token, db)
+
+    if not usuario:
+        return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
+
+    produtos = db.query(Produto).all()
+    return templates.TemplateResponse('admin-produto-deletar.html', {
+        'request': request,
+        'produtos': produtos
+    })
+
+
+@router.post("/admin/produto")
+def criar_produto(
+    request:Request,
+    nome:str=Form(...),
+    preco:float=Form(...),
+    quantidade:int=Form(...),
+    categoria:str=Form(...),
+    cor:str=Form(...),
+    imagem:UploadFile=File(...),
+    detalhe1: UploadFile | None = File(None),
+    detalhe2: UploadFile | None = File(None),
+    detalhe3: UploadFile | None = File(None),
+    detalhe4: UploadFile | None = File(None),
+    db:Session=Depends(get_db)
+):
+
+    token = request.cookies.get("token")
+    email, usuario, admin = verificarUser(token, db)
+
+    if not usuario:
+        return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
+
+    # Gera caminho completo para salvar a imagem principal
+    caminho_arquivo = os.path.join(UPLOAD_DIR, imagem.filename)
+
+    # Salva o arquivo
+    with open(caminho_arquivo, "wb") as arquivo:
+        shutil.copyfileobj(imagem.file, arquivo)
+        
+    novo_produto = Produto(
+        nome=nome,
+        preco=preco,
+        quantidade=quantidade,
+        categoria=categoria,
+        cor=cor,
+        imagem=imagem.filename,
+        detalhe1=detalhe1.filename if detalhe1 else "",
+        detalhe2=detalhe2.filename if detalhe2 else "",
+        detalhe3=detalhe3.filename if detalhe3 else "",
+        detalhe4=detalhe4.filename if detalhe4 else ""
+    )
+    db.add(novo_produto)
+    db.commit()
+    db.refresh(novo_produto)
+    return RedirectResponse(url="/admin/produto",status_code=303)
+
+@router.post("/admin/delete/{id}")
+def deletar_produto(request:Request, id:int,db:Session=Depends(get_db)):
+
+    token = request.cookies.get("token")
+    email, usuario, admin = verificarUser(token, db)
+
+    if not usuario:
+        return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
+
+    produto=db.query(Produto).filter(Produto.id==id).first()
+    if produto:
+        db.delete(produto)
+        db.commit()
+    return RedirectResponse(url="/admin/delete",status_code=303)
