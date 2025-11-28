@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 from Model.conexaoDB import get_db, SessionLocal
 #get_db = injeção do SessionLocal na API
 
-from models import Produto, Usuario, ItemPedido, Pedido
+from models import Produto, Usuario, ItemPedido, Pedido, Visita
 
 from Model.auth import gerar_hash_senha, verificar_senha, criar_token, verificar_token
 
@@ -196,6 +196,10 @@ async def login(
         destino = "/me/dados_admin"
     else:
         token = criar_token({"sub": usuario.email})
+        addVisita = Visita(visita = usuario.id)
+        db.add(addVisita)
+        db.commit()
+        db.refresh(addVisita)
         destino = "/me/dados"
 
     response = RedirectResponse(url=destino, status_code=302)
@@ -480,8 +484,16 @@ def admin(request: Request, db: Session = Depends(get_db)):
         if payload:
             email = payload.get("sub")
             usuario = db.query(Usuario).filter(Usuario.email == email).first()
+            
+    usuarios = db.query(Usuario).all()
+    numerosUsuarios = len(usuarios)
 
-    return templates.TemplateResponse("admin.html", {"request": request, "usuario":usuario})
+    produtos = db.query(Produto).all()
+    numeroProdutos = len(produtos)
+
+    total_acessos = db.query(Visita).count() 
+
+    return templates.TemplateResponse("admin.html", {"request": request, "usuario":usuario, "usuarios":numerosUsuarios, "produtos":numeroProdutos, "acessos": total_acessos})
 
 # -----   -----
 

@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+# from Model.conexaoDB import SessionLocal
+# from models import Visita
 from controllers import router
 from fastapi.staticfiles import StaticFiles # Montar pasta de imagem
 

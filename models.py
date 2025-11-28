@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DECIMAL, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship
-from sqlalchemy import text
+from sqlalchemy import text, DateTime, func
 from Model.conexaoDB import SessionLocal, Base, engine
 from Model.auth import gerar_hash_senha
 
@@ -51,6 +51,11 @@ class ItemPedido(Base):
 
     pedido = relationship("Pedido", back_populates="itens")
 
+class Visita(Base):
+    __tablename__ = "visitas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    visita = Column("visita", Integer, default=False)
 
 # CRUD PARA PRODUTOS
 # CREATE
@@ -111,3 +116,6 @@ def create_usuario(nome:str, email:str, senha:str, is_admin:bool):
 # create("Bolsa Auxiliar", 7600.000, 10, "Tote", "marrom", "louis-vuitton-bolsa-carryall-vibe-mm-1.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif")
 # create_usuario("kaua", "kaua@gmail.com", gerar_hash_senha("123"), is_admin=True)
 # create_usuario("kaua", "kauarp.rodrigues@gmail.com", gerar_hash_senha("123"), is_admin=False)
+# Visita.__table__.create(bind=engine, checkfirst=True)
+
+# Visita.__table__.drop(engine)  apaga a tabela
