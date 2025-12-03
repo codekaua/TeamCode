@@ -17,10 +17,10 @@ class Produto(Base):
     
     # --- Imagens ---
     imagem = Column(String)
-    detalhe_1 = Column(String)
-    detalhe_2 = Column(String)
-    detalhe_3 = Column(String)
-    detalhe_4 = Column(String)
+    detalhe_1 = Column("detalhe_1", String)
+    detalhe_2 = Column("detalhe_2", String)
+    detalhe_3 = Column("detalhe_3", String)
+    detalhe_4 = Column("detalhe_4", String)
 
 class Usuario(Base):
     __tablename__ = 'usuarios'
@@ -119,7 +119,7 @@ def create_usuario(nome:str, email:str, senha:str, is_admin:bool):
     session.close()
 
 # Criação das tabelas
-Base.metadata.create_all(bind=engine)  
+# Base.metadata.create_all(bind=engine)
 
 # teste criar
 # create("Bolsa Auxiliar", 7600.000, 10, "Tote", "marrom", "louis-vuitton-bolsa-carryall-vibe-mm-1.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif")
