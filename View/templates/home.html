@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- <link rel="stylesheet" href="style_home.css" /> -->
-    <link rel="icon" href="/static/uploads/bolsa-de-mulher.png">
+    <link rel="icon" href="/static/uploads/bolsa-de-mulher.png" />
     <link
       rel="stylesheet"
       href="{{url_for('static', path='Pasta_css/style_home2.css') }}"
@@ -26,7 +26,15 @@
     />
     <title>Home - LaVeraBags</title>
   </head>
+
   <body>
+    <div id="intro">
+      <video id="introVideo" autoplay muted disablePictureInPicture>
+        <source src="/static/uploads/intro.mp4" type="video/mp4" />
+        Seu navegador não suporta vídeo.
+      </video>
+    </div>
+
     <!-- Header -->
     <main id="container_main">
       <header id="container_header">
@@ -46,56 +54,56 @@
         </div>
         <div class="inline right-header">
           {% if usuario %}
-            <a href=""
-              ><img src="/static/uploads/icons_header/coracao.png" alt=""
-            /></a>
-            <a href="/meus-pedidos" class="carrinho-icon">
-              <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-              <span id="contador-carrinho" class="badge">0</span>
-            </a>
-            <div class="perfil-menu-container">
-              <img
-                id="foto-perfil"
-                src="/static/uploads/icons_header/img-perfil.png"
-                alt="imagem de perfil"
-                onclick="toggleMenu()"
-              />
+          <a href=""
+            ><img src="/static/uploads/icons_header/coracao.png" alt=""
+          /></a>
+          <a href="/meus-pedidos" class="carrinho-icon">
+            <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+            <span id="contador-carrinho" class="badge">0</span>
+          </a>
+          <div class="perfil-menu-container">
+            <img
+              id="foto-perfil"
+              src="/static/uploads/icons_header/img-perfil.png"
+              alt="imagem de perfil"
+              onclick="toggleMenu()"
+            />
 
-              <div id="menu-perfil" class="popup-menu">
-                <a href="/me/dados">Meus Dados</a>
-                <a href="/me/pedidos">Meus Pedidos</a>
-                <a href="/logout">Sair</a>
-              </div>
+            <div id="menu-perfil" class="popup-menu">
+              <a href="/me/dados">Meus Dados</a>
+              <a href="/me/pedidos">Meus Pedidos</a>
+              <a href="/logout">Sair</a>
             </div>
+          </div>
 
-            <script>
-              function toggleMenu() {
-                const menu = document.getElementById("menu-perfil");
-                menu.style.display =
-                  menu.style.display === "block" ? "none" : "block";
+          <script>
+            function toggleMenu() {
+              const menu = document.getElementById("menu-perfil");
+              menu.style.display =
+                menu.style.display === "block" ? "none" : "block";
+            }
+
+            // Fecha o menu se clicar fora
+            window.onclick = function (event) {
+              const menu = document.getElementById("menu-perfil");
+              const foto = document.getElementById("foto-perfil");
+              if (
+                !foto.contains(event.target) &&
+                !menu.contains(event.target)
+              ) {
+                menu.style.display = "none";
               }
-
-              // Fecha o menu se clicar fora
-              window.onclick = function (event) {
-                const menu = document.getElementById("menu-perfil");
-                const foto = document.getElementById("foto-perfil");
-                if (
-                  !foto.contains(event.target) &&
-                  !menu.contains(event.target)
-                ) {
-                  menu.style.display = "none";
-                }
-              };
-            </script>
+            };
+          </script>
           {% else %}
-            <a href=""
-              ><img src="/static/uploads/icons_header/coracao.png" alt=""
-            /></a>
-            <a href="/meus-pedidos" class="carrinho-icon">
-              <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-              <span id="contador-carrinho" class="badge">0</span>
-            </a>
-            <a href="/login">Login</a>
+          <a href=""
+            ><img src="/static/uploads/icons_header/coracao.png" alt=""
+          /></a>
+          <a href="/meus-pedidos" class="carrinho-icon">
+            <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+            <span id="contador-carrinho" class="badge">0</span>
+          </a>
+          <a href="/login">Login</a>
           {% endif %}
         </div>
       </header>
@@ -230,6 +238,29 @@
         </div>
       </footer>
     </main>
+    <script>
+      // Pega os elementos do DOM
+      const intro = document.getElementById("intro"); // div que contém o vídeo
+      const main = document.getElementById("container_main"); // conteúdo principal
+      const video = document.getElementById("introVideo"); // elemento <video>
+
+      // Checa se a intro já foi mostrada nesta aba (sessionStorage dura apenas a aba)
+      if (sessionStorage.getItem("introPlayed")) {
+        // Se já foi mostrada, esconde a intro e mostra o site direto
+        intro.style.display = "none";
+        main.style.display = "block";
+      } else {
+        // Se é a primeira vez, espera o vídeo terminar
+        video.addEventListener("ended", () => {
+          intro.style.display = "none"; // esconde a intro
+          main.style.display = "block"; // mostra o site
+          sessionStorage.setItem("introPlayed", "true"); // marca que já foi mostrado nesta sessão
+        });
+
+        // Garante que o site fique oculto até o vídeo terminar, mesmo se o vídeo demorar para carregar
+        main.style.display = "none";
+      }
+    </script>
     <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
   </body>
 </html>

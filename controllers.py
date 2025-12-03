@@ -1,36 +1,38 @@
 from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPException, Query
-#APIRouter = Rotas API para o front,
-#request = Requisição HTTP, 
-#Form = Formulário para criar e editar
-#UploadFile = Upload da foto
-#File = Função para gravar caminho da imagem
-#Depends = Dependência do banco de dados sqlite #pip install python-multipart
+# APIRouter = Rotas API para o front,
+# request = Requisição HTTP,
+# Form = Formulário para criar e editar
+# UploadFile = Upload da foto
+# File = Função para gravar caminho da imagem
+# Depends = Dependência do banco de dados sqlite #pip install python-multipart
 
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 # HTMLResponse = Resposta do html, get, post, put, delete
-#RedirectResponse = Redirecionar a resposta para o front
+# RedirectResponse = Redirecionar a resposta para o front
 
 from fastapi.templating import Jinja2Templates
 # Jinja2Templates = Responsável por renderizar o front-end
 
-import os, shutil
+import os
+import shutil
 # os = funções de sistema operacional,
 # shutil = salva e puxa diretórios do sistema 'caminho das imagens'
-import requests, math
+import requests
+import math
 from sqlalchemy.orm import Session
-#Session = Modelgem do ORM models
+# Session = Modelgem do ORM models
 
 from Model.conexaoDB import get_db, SessionLocal
-#get_db = injeção do SessionLocal na API
+# get_db = injeção do SessionLocal na API
 
-from models import Produto, Usuario, ItemPedido, Pedido, Visita
+from models import Produto, Usuario, ItemPedido, Pedido, Visita, Comentario
 
 from Model.auth import gerar_hash_senha, verificar_senha, criar_token, verificar_token
 
-#Produto = Modelagem, nome, preço, quantidade, imagem
+# Produto = Modelagem, nome, preço, quantidade, imagem
 
-router = APIRouter() #Rotas
-templates = Jinja2Templates(directory='./View/templates') #Front-end
+router = APIRouter()  # Rotas
+templates = Jinja2Templates(directory='./View/templates')  # Front-end
 
 # Caminho da pasta de uploads
 UPLOAD_DIR = "static/uploads"  # sem a barra inicial
@@ -38,6 +40,8 @@ UPLOAD_DIR = "static/uploads"  # sem a barra inicial
 os.makedirs(UPLOAD_DIR, exist_ok=True)  # cria a pasta se não existir)
 
 # ---------- Verificar token para páginas protegidas ----------
+
+
 def usuario_logado(request: Request, db: Session = Depends(get_db)):
     """
     Verifica se o usuário está logado (token válido).
@@ -47,11 +51,11 @@ def usuario_logado(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("token")
     if not token:
         return RedirectResponse(url="/login", status_code=303)
-    
+
     payload = verificar_token(token)
     if not payload:
         return RedirectResponse(url="/login", status_code=303)
-    
+
     email = payload.get("sub")
     usuario = db.query(Usuario).filter(Usuario.email == email).first()
     if not usuario:
@@ -60,18 +64,21 @@ def usuario_logado(request: Request, db: Session = Depends(get_db)):
     # Retorna o usuário autenticado para uso nas rotas
     return usuario
 
+
 def verificando_token(request: Request):
     token = request.cookies.get("token")
     if not token:
         return False
-    
+
     payload = verificar_token(token)
     if not payload:
         return False
-    
+
     return True
 
-#Rota para mostrar página home
+# Rota para mostrar página home
+
+
 @router.get('/', response_class=HTMLResponse)
 async def listar_home(request: Request, db: Session = Depends(get_db)):
     usuario = None
@@ -89,45 +96,85 @@ async def listar_home(request: Request, db: Session = Depends(get_db)):
     })
 
 # http://127.0.0.1:8000/produtos/?categoria=couro
-#Rota para listar produtos na loja.html
+# Rota para listar produtos na loja.html
+
+
 @router.get('/produtos', response_class=HTMLResponse)
-async def listar(request: Request, offset: int = 0, limit: int = 6, categoria: str = None, db: Session = Depends(get_db)):
-    payload = verificando_token(request)
-    if payload:
-        return RedirectResponse(url="/me/produtos", status_code=303)
+def listar(
+    request: Request,
+    categoria: str | None = Query(None),
+    cor: str | None = Query(None),
+    db: Session = Depends(get_db)
+):
+    usuario = None
+    token = request.cookies.get("token")
 
-    query = db.query(Produto) # consultar todos os produtos / economizar linha
+    if token:
+        payload = verificar_token(token)
+        if payload:
+            email = payload.get("sub")
+            usuario = db.query(Usuario).filter(Usuario.email == email).first()
+            return RedirectResponse(url="/me/produtos", status_code=303)
+            
+
+    query = db.query(Produto)
+
     if categoria:
-        query = query.filter(Produto.categoria == categoria) 
-        #como o filter() ñ altera o obj query original a gnt temq armazenar na variável, senão será ignorado
+        query = query.filter(Produto.categoria == categoria)
+    if cor:
+        query = query.filter(Produto.cor == cor)
 
-    total_produtos = query.count()  # conta quantos produtos existem
+    produtos = query.all()
 
-    # Se o offset for maior ou igual ao total, volta pro início
-    if offset >= total_produtos:
-        offset = 0 # restarta offset
+    return templates.TemplateResponse("loja.html", {
+        "request": request,
+        "usuario": usuario,
+        "produtos": produtos,
+        "categoria_selecionada": categoria,
+        "cor_selecionada": cor
+    })
 
-    produtos = query.offset(offset).limit(limit).all()
+# ----- User Produtos -----
 
-    # Calcula o próximo offset
-    proximo_offset = offset + limit
 
-    # Se o próximo offset passar do total, na próxima vez volta ao início
-    if proximo_offset >= total_produtos:
-        proximo_offset = 0
+@router.get('/me/produtos', response_class=HTMLResponse)
+def listar_user(
+    request: Request,
+    categoria: str | None = Query(None),
+    cor: str | None = Query(None),
+    db: Session = Depends(get_db)
+):
+    usuario = None
+    token = request.cookies.get("token")
 
-    if produtos:
-        return templates.TemplateResponse('loja.html', {
-            'request': request,
-            'produtos': produtos,
-            'categoria': categoria,
-            'offset': proximo_offset,  # devolve o offset para o próximo clique
-            'limit': limit
-        })
+    if token:
+        payload = verificar_token(token)
+        if payload:
+            email = payload.get("sub")
+            usuario = db.query(Usuario).filter(Usuario.email == email).first()            
 
-#Rota para listar único produto
+    query = db.query(Produto)
+
+    if categoria:
+        query = query.filter(Produto.categoria == categoria)
+    if cor:
+        query = query.filter(Produto.cor == cor)
+
+    produtos = query.all()
+
+    return templates.TemplateResponse("loja-user.html", {
+        "request": request,
+        "usuario": usuario,
+        "produtos": produtos,
+        "categoria_selecionada": categoria,
+        "cor_selecionada": cor
+    })
+
+# Rota para listar único produto
+
+
 @router.get('/produto/{id_produto}', response_class=HTMLResponse)
-async def detalhe(request:Request, id_produto:int, db:Session=Depends(get_db)):
+async def detalhe(request: Request, id_produto: int, db: Session = Depends(get_db)):
     produto = db.query(Produto).filter(Produto.id == id_produto).first()
     usuario = None
     token = request.cookies.get("token")
@@ -139,15 +186,17 @@ async def detalhe(request:Request, id_produto:int, db:Session=Depends(get_db)):
             email = payload.get("sub")
             usuario = db.query(Usuario).filter(Usuario.email == email).first()
             carrinho = carrinhos.get(usuario.id, [])
-            
+
     return templates.TemplateResponse('produto.html', {
         'request': request,
         'produto': produto,
         'carrinho': carrinho,
-        'usuario':usuario
+        'usuario': usuario
     })
 
-#Rota para mostrar página sobre
+# Rota para mostrar página sobre
+
+
 @router.get('/sobre', response_class=HTMLResponse)
 async def sobre(request: Request, db: Session = Depends(get_db)):
     usuario = None
@@ -164,14 +213,17 @@ async def sobre(request: Request, db: Session = Depends(get_db)):
         "usuario": usuario
     })
 
-#Rota para mostrar página login
+# Rota para mostrar página login
+
+
 @router.get('/login', response_class=HTMLResponse)
-async def login(request:Request):
+async def login(request: Request):
     return templates.TemplateResponse('login.html', {
-        'request':request
+        'request': request
     })
 
 # ----- Login -----
+
 
 @router.post("/login")
 async def login(
@@ -189,41 +241,29 @@ async def login(
             return JSONResponse({"mensagem": "Senha incorreta."}, status_code=401)
     except Exception as e:
         print(f"Erro ao verificar senha para {email}: {e}")
-        return JSONResponse({"mensagem": "Erro ao verificar senha. Tente redefinir sua senha."},status_code=500)
+        return JSONResponse({"mensagem": "Erro ao verificar senha. Tente redefinir sua senha."}, status_code=500)
 
     if usuario.is_admin:
         token = criar_token({"sub": usuario.email, "is_admin": True})
         destino = "/admin/dados"
     else:
         token = criar_token({"sub": usuario.email})
-        addVisita = Visita(visita = usuario.id)
+        addVisita = Visita(visita=usuario.id)
         db.add(addVisita)
         db.commit()
         db.refresh(addVisita)
         destino = "/me/dados"
 
     response = RedirectResponse(url=destino, status_code=302)
-    response.set_cookie(key="token",value=token,httponly=True)
+    response.set_cookie(key="token", value=token, httponly=True)
     return response
 
-# ----- User Produtos -----
-
-@router.get('/me/produtos', response_class=HTMLResponse)
-async def listar_produtos_user(request: Request, offset: int = 0, limit: int = 6, db: Session = Depends(get_db)):
-    produtos = db.query(Produto).offset(offset).limit(limit).all()
-    total_produtos = db.query(Produto).count()
-    proximo_offset = offset + limit if offset + limit < total_produtos else 0
-
-    return templates.TemplateResponse('loja-user.html', {
-        'request': request,
-        'produtos': produtos,
-        'offset': proximo_offset,
-        'limit': limit
-    })
 
 # -----   -----
 
 # ----- Dados user -----
+
+
 @router.get("/me/dados", response_class=HTMLResponse)
 def listar_dados(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("token")
@@ -232,18 +272,19 @@ def listar_dados(request: Request, db: Session = Depends(get_db)):
     payload = verificar_token(token)
     if not payload:
         return RedirectResponse(url="/login", status_code=303)
-    
+
     email = payload.get("sub")
     usuario = db.query(Usuario).filter(Usuario.email == email).first()
     admin = db.query(Usuario).filter(Usuario.is_admin)
-    
-    return templates.TemplateResponse('perfil_user.html', { 
+
+    return templates.TemplateResponse('perfil_user.html', {
         'request': request,
         'usuario': usuario,
         'admin': admin
     })
 # loja-user.html
 # ----- User Pedidos -----
+
 
 @router.get('/me/pedidos', response_class=HTMLResponse)
 def listar_pedidos(request: Request, db: Session = Depends(get_db)):
@@ -272,21 +313,25 @@ def listar_pedidos(request: Request, db: Session = Depends(get_db)):
 
 # -----   -----
 
-#Rota para mostrar página cadastro
+# Rota para mostrar página cadastro
+
+
 @router.get('/register', response_class=HTMLResponse)
-async def cadastro(request:Request):
+async def cadastro(request: Request):
     return templates.TemplateResponse('cadastro.html', {
-        'request':request
+        'request': request
     })
+
+
 @router.post('/register')
 async def cadastrar_usuario(
-    nome:str = Form(...),
-    email:str = Form(...),
-    senha:str = Form(...),
-    db:Session = Depends(get_db)):
+        nome: str = Form(...),
+        email: str = Form(...),
+        senha: str = Form(...),
+        db: Session = Depends(get_db)):
     usuario = db.query(Usuario).filter(Usuario.email == email).first()
     if usuario:
-        return {'mensagem':'E-mail já cadastrado'}
+        return {'mensagem': 'E-mail já cadastrado'}
     else:
         senha_hash = gerar_hash_senha(senha)
         novo_usuario = Usuario(nome=nome, email=email, senha=senha_hash)
@@ -295,10 +340,12 @@ async def cadastrar_usuario(
         db.refresh(novo_usuario)
         return RedirectResponse(url='/login', status_code=303)
 
-#carrinho simples em memória
-#adicionar itens ao carrinho
-carrinhos={}
-# rotas para carrinho 
+# carrinho simples em memória
+# adicionar itens ao carrinho
+carrinhos = {}
+# rotas para carrinho
+
+
 @router.post("/carrinho/adicionar/{id_produto}")
 async def adicionar_carrinho(
     request: Request,
@@ -321,18 +368,18 @@ async def adicionar_carrinho(
     if not produto:
         return RedirectResponse(url="/", status_code=303)
 
-    carrinho=carrinhos.get(usuario.id,[])
+    carrinho = carrinhos.get(usuario.id, [])
     if len(carrinho) >= 1:
         # se já houver item, redireciona direto para o carrinho
         return RedirectResponse(url="/carrinho", status_code=303)
-    
+
     carrinho.append({
-        "id":produto.id,
-        "nome":produto.nome,
-        "preco":float(produto.preco),
-        "quantidade":quantidade
+        "id": produto.id,
+        "nome": produto.nome,
+        "preco": float(produto.preco),
+        "quantidade": quantidade
     })
-    carrinhos[usuario.id]=carrinho # o id... fez tal pedido
+    carrinhos[usuario.id] = carrinho  # o id... fez tal pedido
     return RedirectResponse(url="/carrinho", status_code=303)
 
     # item_existente = db.query(Carrinho).filter(
@@ -349,6 +396,8 @@ async def adicionar_carrinho(
     # db.commit()
 
 # rota para visualizar o carrinho
+
+
 @router.get("/carrinho", response_class=HTMLResponse)
 async def ver_carrinho(request: Request, db: Session = Depends(get_db)):
     usuario = None
@@ -359,27 +408,30 @@ async def ver_carrinho(request: Request, db: Session = Depends(get_db)):
         if payload:
             email = payload.get("sub")
             usuario = db.query(Usuario).filter(Usuario.email == email).first()
-    carrinho=carrinhos.get(usuario.id,[])
+    carrinho = carrinhos.get(usuario.id, [])
     # itens = db.query(Carrinho).filter(Carrinho.id_usuario == usuario.id).all()
-    total=round(sum(item["preco"]*item["quantidade"] for item in carrinho), 2)
+    total = round(sum(item["preco"]*item["quantidade"]
+                  for item in carrinho), 2)
 
     return templates.TemplateResponse("carrinho.html", {
         "request": request,
         "carrinho": carrinho,
-        "total":total,
-        "usuario":usuario
+        "total": total,
+        "usuario": usuario
     })
+
 
 @router.post("/checkout")
 async def checkout(request: Request, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_logado)):
-    
+
     carrinho = carrinhos.get(usuario.id, [])
 
     if not carrinho:
         return {"mensagem": "Carrinho vazio"}
 
     # calcula o total
-    total = round(sum(item["preco"] * item["quantidade"] for item in carrinho), 2)
+    total = round(sum(item["preco"] * item["quantidade"]
+                  for item in carrinho), 2)
 
     # cria o pedido
     pedido = Pedido(id_usuario=usuario.id, total=total)
@@ -390,7 +442,7 @@ async def checkout(request: Request, db: Session = Depends(get_db), usuario: Usu
     # adiciona os itens do carrinho na tabela ItemPedido
     for item in carrinho:
         novo_item = ItemPedido(
-            id_pedido=pedido.id, 
+            id_pedido=pedido.id,
             id_produto=item["id"],
             quantidade=item["quantidade"],
             preco_unitario=item["preco"]
@@ -400,31 +452,40 @@ async def checkout(request: Request, db: Session = Depends(get_db), usuario: Usu
     # limpa o carrinho
     carrinhos[usuario.id] = []
     return RedirectResponse(url="/meus-pedidos", status_code=303)
-    
-#listar pedidos do usuário
-@router.get("/meus-pedidos",response_class=HTMLResponse)
-def meus_pedidos(request:Request, db:Session=Depends(get_db), usuario: Usuario = Depends(usuario_logado)):
+
+# listar pedidos do usuário
+
+
+@router.get("/meus-pedidos", response_class=HTMLResponse)
+def meus_pedidos(request: Request, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_logado)):
     token = request.cookies.get("token")
     if not token:
         return RedirectResponse(url="/login", status_code=303)
     payload = verificar_token(token)
     if not payload:
         return RedirectResponse(url="/login", status_code=303)
-    
+
     else:
         pedidos = db.query(Pedido).filter_by(id_usuario=usuario.id).all()
 
         total_geral = sum(p.total for p in pedidos)
 
     return templates.TemplateResponse("checkout.html",
-                                      {"request":request, "pedidos":pedidos, "total_geral":total_geral, "usuario":usuario})
+                                      {"request": request, "pedidos": pedidos, "total_geral": total_geral, "usuario": usuario})
 
-    
-    
+
 @router.get("/api/contador-carrinho")
 def contador_carrinho(db: Session = Depends(get_db), request: Request = None):
     token = request.cookies.get("token")
+
+    if not token:
+        return {"quantidade": 0}
+
     payload = verificar_token(token)
+
+    if not payload:
+        return {"quantidade": 0}
+
     if not payload:
         return {"quantidade": 0}
 
@@ -444,6 +505,8 @@ def contador_carrinho(db: Session = Depends(get_db), request: Request = None):
     return {"quantidade": quantidade_total}
 
 # #rota para deletar o produto do carrinho
+
+
 @router.post("/carrinho/remover/{id_item}")
 async def remover_carrinho(request: Request, id_item: int, db: Session = Depends(get_db)):
     item = db.query(Pedido).filter(Pedido.id == id_item).first()
@@ -452,6 +515,7 @@ async def remover_carrinho(request: Request, id_item: int, db: Session = Depends
         db.commit()
         return RedirectResponse(url="/produtos", status_code=303)
 
+
 @router.get("/logout")
 def logout():
     response = RedirectResponse(url="/produtos", status_code=302)
@@ -459,61 +523,62 @@ def logout():
     return response
 
 
-#imports HTTPException,Query no from fastapi
-#import requests,math
-#rota frete simulado
-#cep fixo da loja
-CEP_LOJA="03008020"#cep SENAI FRANCISCO MATARAZZO
+# imports HTTPException,Query no from fastapi
+# import requests,math
+# rota frete simulado
+# cep fixo da loja
+CEP_LOJA = "03008020"  # cep SENAI FRANCISCO MATARAZZO
+
+
 @router.get("/api/frete")
 def calcular_frete(
-    request:Request,cep_destino:str=Query(...)
+    request: Request, cep_destino: str = Query(...)
 ):
-    #token login obrigatório
-    token=request.cookies.get("token")
-    payload=verificar_token(token)
+    # token login obrigatório
+    token = request.cookies.get("token")
+    payload = verificar_token(token)
     if not payload:
         raise HTTPException(status_code=401,
-            detail="Usuário não autenticado")
-    #validação simples do cep
-    if not cep_destino.isdigit() or len(cep_destino) !=8:
+                            detail="Usuário não autenticado")
+    # validação simples do cep
+    if not cep_destino.isdigit() or len(cep_destino) != 8:
         raise HTTPException(status_code=400,
-            detail="CEP inválido")
-    #consulta no viacep
-    via_cep_url=f"https://viacep.com.br/ws/{cep_destino}/json/"
-    resposta=requests.get(via_cep_url)
-    if resposta.status_code !=200:
+                            detail="CEP inválido")
+    # consulta no viacep
+    via_cep_url = f"https://viacep.com.br/ws/{cep_destino}/json/"
+    resposta = requests.get(via_cep_url)
+    if resposta.status_code != 200:
         raise HTTPException(status_code=400,
-            detail="Erro ao consultar o CEP")
-    dados=resposta.json()
+                            detail="Erro ao consultar o CEP")
+    dados = resposta.json()
     if "erro" in dados:
         raise HTTPException(status_code=400,
-            detail="CEP não encontrado")
-    #simulação do frete
-    valor_frete=15.00
-    prazo_estimado=5
-    #retorno estruturado
+                            detail="CEP não encontrado")
+    # simulação do frete
+    valor_frete = 15.00
+    prazo_estimado = 5
+    # retorno estruturado
     return {
-        "endereco":f"{dados.get('logradouro')} - {dados.get('bairro')} - {dados.get('localidade')} - {dados.get('uf')}",
-        "cep":cep_destino,
-        "valor_frete":valor_frete,
-        "prazo_estimado_dias":prazo_estimado,
-        "status":"Simulação concluída"
+        "endereco": f"{dados.get('logradouro')} - {dados.get('bairro')} - {dados.get('localidade')} - {dados.get('uf')}",
+        "cep": cep_destino,
+        "valor_frete": valor_frete,
+        "prazo_estimado_dias": prazo_estimado,
+        "status": "Simulação concluída"
     }
 
 #########################
 
-   
 
 # ----- Rotas Admin -----------------------------------------------------------
 
 def verificarUser(token, db):
     if not token:
         return None, None, None
-    
+
     payload = verificar_token(token)
     if not payload:
         return None, None, None
-    
+
     email = payload.get("sub")
     usuario = db.query(Usuario).filter(Usuario.email == email).first()
     admin = db.query(Usuario).filter(Usuario.is_admin)
@@ -534,14 +599,15 @@ def listar_dados(request: Request, db: Session = Depends(get_db)):
 
     if not usuario:
         return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
-    
-    return templates.TemplateResponse('perfil_admin.html', { 
+
+    return templates.TemplateResponse('perfil_admin.html', {
         'request': request,
         'usuario': usuario,
         'admin': admin
     })
 
 # ----- Página home admin -----
+
 
 @router.get("/admin")
 def admin(request: Request, db: Session = Depends(get_db)):
@@ -551,21 +617,22 @@ def admin(request: Request, db: Session = Depends(get_db)):
 
     if not usuario:
         return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
-    
+
     usuarios = db.query(Usuario).all()
     numerosUsuarios = len(usuarios)
 
     produtos = db.query(Produto).all()
     numeroProdutos = len(produtos)
 
-    total_acessos = db.query(Visita).count() 
+    total_acessos = db.query(Visita).count()
 
-    return templates.TemplateResponse("admin.html", {"request": request, "usuario":usuario, "usuarios":numerosUsuarios, "produtos":numeroProdutos, "acessos": total_acessos})
+    return templates.TemplateResponse("admin.html", {"request": request, "usuario": usuario, "usuarios": numerosUsuarios, "produtos": numeroProdutos, "acessos": total_acessos})
 
 # ----- Página Admin Produto -----
 
+
 @router.get('/admin/produto', response_class=HTMLResponse)
-async def listar_admin(request:Request, db:Session=Depends(get_db)):
+async def listar_admin(request: Request, db: Session = Depends(get_db)):
 
     token = request.cookies.get("token")
     email, usuario, admin = verificarUser(token, db)
@@ -573,13 +640,13 @@ async def listar_admin(request:Request, db:Session=Depends(get_db)):
     if not usuario:
         return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
 
-    return templates.TemplateResponse('admin-produto.html', {'request':request})
+    return templates.TemplateResponse('admin-produto.html', {'request': request})
 
 
 # ----- Página Admin Produto Deletar -----
 
 @router.get('/admin/delete', response_class=HTMLResponse)
-async def listar_admin_produto_deletar(request:Request, db:Session=Depends(get_db)):
+async def listar_admin_produto_deletar(request: Request, db: Session = Depends(get_db)):
 
     token = request.cookies.get("token")
     email, usuario, admin = verificarUser(token, db)
@@ -596,18 +663,18 @@ async def listar_admin_produto_deletar(request:Request, db:Session=Depends(get_d
 
 @router.post("/admin/produto")
 def criar_produto(
-    request:Request,
-    nome:str=Form(...),
-    preco:float=Form(...),
-    quantidade:int=Form(...),
-    categoria:str=Form(...),
-    cor:str=Form(...),
-    imagem:UploadFile=File(...),
+    request: Request,
+    nome: str = Form(...),
+    preco: float = Form(...),
+    quantidade: int = Form(...),
+    categoria: str = Form(...),
+    cor: str = Form(...),
+    imagem: UploadFile = File(...),
     detalhe1: UploadFile | None = File(None),
     detalhe2: UploadFile | None = File(None),
     detalhe3: UploadFile | None = File(None),
     detalhe4: UploadFile | None = File(None),
-    db:Session=Depends(get_db)
+    db: Session = Depends(get_db)
 ):
 
     token = request.cookies.get("token")
@@ -622,7 +689,7 @@ def criar_produto(
     # Salva o arquivo
     with open(caminho_arquivo, "wb") as arquivo:
         shutil.copyfileobj(imagem.file, arquivo)
-        
+
     novo_produto = Produto(
         nome=nome,
         preco=preco,
@@ -630,18 +697,19 @@ def criar_produto(
         categoria=categoria,
         cor=cor,
         imagem=imagem.filename,
-        detalhe1=detalhe1.filename if detalhe1 else "",
-        detalhe2=detalhe2.filename if detalhe2 else "",
-        detalhe3=detalhe3.filename if detalhe3 else "",
-        detalhe4=detalhe4.filename if detalhe4 else ""
+        detalhe_1=detalhe1.filename if detalhe1 else "",
+        detalhe_2=detalhe2.filename if detalhe2 else "",
+        detalhe_3=detalhe3.filename if detalhe3 else "",
+        detalhe_4=detalhe4.filename if detalhe4 else ""
     )
     db.add(novo_produto)
     db.commit()
     db.refresh(novo_produto)
-    return RedirectResponse(url="/admin/produto",status_code=303)
+    return RedirectResponse(url="/admin/produto", status_code=303)
+
 
 @router.post("/admin/delete/{id}")
-def deletar_produto(request:Request, id:int,db:Session=Depends(get_db)):
+def deletar_produto(request: Request, id: int, db: Session = Depends(get_db)):
 
     token = request.cookies.get("token")
     email, usuario, admin = verificarUser(token, db)
@@ -649,8 +717,53 @@ def deletar_produto(request:Request, id:int,db:Session=Depends(get_db)):
     if not usuario:
         return JSONResponse(status_code=403, content={"mensagem": "Acesso negado!"})
 
-    produto=db.query(Produto).filter(Produto.id==id).first()
+    produto = db.query(Produto).filter(Produto.id == id).first()
     if produto:
         db.delete(produto)
         db.commit()
-    return RedirectResponse(url="/admin/delete",status_code=303)
+    return RedirectResponse(url="/admin/delete", status_code=303)
+
+
+@router.post("/comentarios")
+def criar_comentario(
+    request: Request,
+    rating: int = Form(...),
+    comentario: str = Form(...),
+    produto_id: int = Form(...),
+    db: Session = Depends(get_db)
+):
+
+    token = request.cookies.get("token")
+    email, usuario, admin = verificarUser(token, db)
+
+    if not usuario:
+        usuario_nome = "Anônimo"
+    else:
+        usuario_nome = usuario.nome
+
+    novo_comentario = Comentario(
+        produto_id=produto_id,
+        rating=rating,
+        comentario=comentario,
+        usuario=usuario_nome
+    )
+    db.add(novo_comentario)
+    db.commit()
+    db.refresh(novo_comentario)
+
+    # Redireciona para a página do produto
+    return RedirectResponse(url=f"/produto/{produto_id}", status_code=303)
+
+
+@router.get("/produto/{produto_id}")
+def ver_produto(produto_id: int, request: Request, db: Session = Depends(get_db)):
+
+    produto = db.query(Produto).filter(Produto.id == produto_id).first()
+    comentarios = db.query(Comentario).filter(
+        Comentario.produto_id == produto_id).all()
+
+    return templates.TemplateResponse("produto.html", {
+        "request": request,
+        "produto": produto,
+        "comentarios": comentarios,
+    })

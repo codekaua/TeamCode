@@ -16,11 +16,11 @@ class Produto(Base):
     cor = Column("cor", String(45))
     
     # --- Imagens ---
-    imagem = Column("imagem", String(100), nullable=False)
-    detalhe1 = Column("Detalhe1", String(100))
-    detalhe2 = Column("Detalhe2", String(100))
-    detalhe3 = Column("Detalhe3", String(100))
-    detalhe4 = Column("Detalhe4", String(100))
+    imagem = Column(String)
+    detalhe_1 = Column(String)
+    detalhe_2 = Column(String)
+    detalhe_3 = Column(String)
+    detalhe_4 = Column(String)
 
 class Usuario(Base):
     __tablename__ = 'usuarios'
@@ -56,6 +56,15 @@ class Visita(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     visita = Column("visita", Integer, default=False)
+
+class Comentario(Base):
+    __tablename__ = "comentarios"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    produto_id = Column(Integer, ForeignKey("produtos.id_produto"))
+    comentario = Column(String, nullable=False)
+    rating = Column(Integer, nullable=False)
+    usuario = Column(String(100), nullable=False)
 
 # CRUD PARA PRODUTOS
 # CREATE
@@ -110,11 +119,11 @@ def create_usuario(nome:str, email:str, senha:str, is_admin:bool):
     session.close()
 
 # Criação das tabelas
-# Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)  
 
 # teste criar
 # create("Bolsa Auxiliar", 7600.000, 10, "Tote", "marrom", "louis-vuitton-bolsa-carryall-vibe-mm-1.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif")
-# create_usuario("kaua", "kaua@gmail.com", gerar_hash_senha("123"), is_admin=True)
+# create_usuario("kaua", "kaua@gmail.com", gerar_hash_senha("123"), is_admin=True) 
 # create_usuario("kaua", "kauarp.rodrigues@gmail.com", gerar_hash_senha("123"), is_admin=False)
 # Visita.__table__.create(bind=engine, checkfirst=True)
 

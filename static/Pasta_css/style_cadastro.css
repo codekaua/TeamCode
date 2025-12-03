@@ -1,10 +1,9 @@
 * {
-    margin: 5;
+    margin: 0;
     padding: 0px;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
-
 
 .cadastro_container {
     position: relative;
@@ -36,7 +35,7 @@
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 1;
-} 
+}
 
 h2 {
     font-size: 24px;
@@ -56,11 +55,6 @@ button {
     cursor: pointer;
     font-size: 16px;
     border-radius: 4px;
-}
-
-button.fb {
-    background-color: #3b5998;
-    color: white;
 }
 
 button.fb {
@@ -135,13 +129,13 @@ button.email span {
     font-size: 16px;
 }
 
-
 form input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 16px;
 }
 
 form button {
@@ -155,8 +149,8 @@ form button:hover {
     background-color: #45a049;
 }
 
-a { font-size: 14px;
-    height: 100vh;
+a {
+    font-size: 14px;
     color: #4CAF50;
     text-decoration: none;
 }
@@ -167,33 +161,156 @@ a:hover {
 
 /* Mensagem de sucesso */
 .mensagem {
-  display: none;
-  text-align: center;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: bold;
-  opacity: 0;
+    display: none;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    opacity: 0;
 }
 
 .mensagem.sucesso {
-  background-color: #4CAF50;
-  color: white;
+    background-color: #4CAF50;
+    color: white;
 }
 
 .mensagem.erro {
-  background-color: #f44336;
-  color: white;
+    background-color: #f44336;
+    color: white;
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(-10px); }
-  20% { opacity: 1; transform: translateY(0); }
-  80% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-10px); }
+    0% { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    20% { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+    80% { 
+        opacity: 1; 
+    }
+    100% { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
 }
 
 .mensagem.animar {
-  display: block;
-  animation: fadeInOut 1s ease forwards;
+    display: block;
+    animation: fadeInOut 1s ease forwards;
+}
+
+/* ========== MEDIA QUERIES - RESPONSIVO ========== */
+
+/* Tablets e dispositivos médios (até 768px) */
+@media (max-width: 768px) {
+    .cadastro_box {
+        width: 90%;
+        padding: 25px;
+        max-width: 500px;
+    }
+
+    h2 {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+
+    p {
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    button {
+        padding: 12px;
+        font-size: 14px;
+        margin: 4px 0;
+    }
+
+    button i {
+        font-size: 18px;
+        margin-right: 8px;
+    }
+
+    button span {
+        font-size: 14px;
+    }
+
+    form input {
+        padding: 12px;
+        margin: 8px 0;
+        font-size: 16px;
+    }
+
+    form button {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    a {
+        font-size: 13px;
+    }
+}
+
+/* Celulares pequenos (até 480px) */
+@media (max-width: 480px) {
+    .cadastro_container {
+        height: auto;
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+
+    .cadastro_box {
+        width: 95%;
+        padding: 20px;
+        margin: auto;
+        border-radius: 8px;
+    }
+
+    h2 {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    p {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    button {
+        padding: 10px;
+        font-size: 13px;
+        margin: 3px 0;
+    }
+
+    button i {
+        font-size: 16px;
+        margin-right: 6px;
+    }
+
+    button span {
+        font-size: 12px;
+    }
+
+    form input {
+        padding: 10px;
+        margin: 6px 0;
+        font-size: 16px;
+    }
+
+    form button {
+        font-size: 15px;
+        padding: 10px;
+    }
+
+    a {
+        font-size: 12px;
+    }
+
+    .mensagem {
+        padding: 8px;
+        font-size: 13px;
+    }
 }

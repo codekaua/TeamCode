@@ -1,156 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static', path='Pasta_css/stytle_loja.css') }}">
-    <link rel="icon" href="/static/uploads/bolsa-de-mulher.png">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="../../static/Pasta_css/stytle_loja.css"> -->
+
+    <link rel="stylesheet" href="/static/Pasta_css/stytle_loja.css" />
+    <link rel="icon" href="/static/uploads/bolsa-de-mulher.png" />
     <!-- bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
     <!-- FONTE PADRÃO DO SITE -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
     <title>Produtos - LaVeraBags</title>
-</head>
-<body>
+  </head>
+  <body>
+    <header id="container_header">
+      <div class="inline left-header">
+        <a href="/"><h2>BolsasBR</h2></a> <a href="/produtos">Loja</a>
+        <a href="/sobre">Sobre</a>
+        <form action="" class="form-pesquisa">
+          <label for="pesquisar"
+            ><img
+              class="icones"
+              src="/static/uploads/icons_header/lupa.png"
+              alt=""
+          /></label>
+          <input type="text" id="pesquisar" placeholder="Pesquisar" />
+        </form>
+      </div>
+      <div class="inline right-header">
+        <a href=""
+          ><img src="/static/uploads/icons_header/coracao.png" alt=""
+        /></a>
+        <a href="/meus-pedidos" class="carrinho-icon">
+          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
+          <span id="contador-carrinho" class="badge">0</span>
+        </a>
+        <a href="/login">Login</a>
+      </div>
+    </header>
     <main id="main">
-        <header id="container_header">
-            <div class="inline left-header">
-                <a href="/"><h2>BolsasBR</h2></a>
-                <a href="/produtos">Loja</a>
-                <a href="/sobre">Sobre</a>
-                <form action="">
-                    <label for="pesquisar"><img class="icones" src="/static/uploads/icons_header/lupa.png" alt=""></label>
-                    <input type="text" id="pesquisar" placeholder="Pesquisar">
-                </form>
+      <!-- Produtos -->
+      <section id="container">
+        <div class="fundo_preto">
+          <div class="caixa_fundo_preto">
+            <h2 class="titulo">Loja Feminina</h2>
+            <p class="subtitulo">
+              Renove sua presença com bolsas que celebram tanto a <br />
+              modernidade quanto a tradição da verdadeira elegância.
+            </p>
+          </div>
+        </div>
+
+        <div class="grade">
+          <div class="filtro-mobile" id="filtro-mobile">
+            <button>Filtro</button>
+            <img src="../../static/uploads/icones/filtro.png" alt="filtro" />
+          </div>
+        </div>
+
+        <div class="produtos">
+          <!-- Filtros -->
+          <div class="categoria">
+            <div id="overlay" class="overlay"></div>
+            <div class="side" id="side">
+              <div class="fechar-filtro-mobile">
+                <img
+                  class="icone-fechar"
+                  id="icone-fechar"
+                  src="../../static/uploads/icones/x.png"
+                  alt="fechar"
+                />
+              </div>
+
+              <div class="side-header">
+                <h3 class="text-side-header">Filtro</h3>
+                <button
+                  id="limpar-filtro"
+                  class="limpar-filtro"
+                  {%
+                  if
+                  categoria_selecionada
+                  %}
+                  style="display: block"
+                  {%
+                  else
+                  %}
+                  style="display: none"
+                  {%
+                  endif
+                  %}
+                >
+                  Limpar Filtro
+                </button>
+              </div>
+              <div class="side-categoria">
+                <div class="opcao-categoria" id="opcao-categoria">
+                  <h3 class="text-side-categoria">Categorias</h3>
+                  <img
+                    class="icone-mais"
+                    id="icone-mais"
+                    src="../../static/uploads/icones/icone-mais.png"
+                    alt="icone mais"
+                  />
+                  <img
+                    class="icone-menos"
+                    id="icone-menos"
+                    src="../../static/uploads/icones/icone-menos.png"
+                    alt="icone menos"
+                  />
+                </div>
+                <div class="opcoes-side-cetegoria" id="opcoes-side-cetegoria">
+                  <form action="/produtos" method="get">
+                    {% if cor_selecionada %}
+                    <input
+                      type="hidden"
+                      name="cor"
+                      value="{{ cor_selecionada }}"
+                    />
+                    {% endif %}
+
+                    <div class="opcao-side-categoria">
+                      <input type="radio" name="categoria" id="clutch"
+                      style="accent-color: black;" value="Clutch" {% if
+                      categoria_selecionada == 'Clutch' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="clutch">Clutch</label>
+                    </div>
+                    <div class="opcao-side-categoria">
+                      <input type="radio" name="categoria" id="tote"
+                      style="accent-color: black;" value="Tote" {% if
+                      categoria_selecionada == 'Tote' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="tote">Tote</label>
+                    </div>
+                    <div class="opcao-side-categoria">
+                      <input type="radio" name="categoria" id="crossbody"
+                      style="accent-color: black;" value="Crossbody" {% if
+                      categoria_selecionada == 'Crossbody' %} checked {% endif
+                      %} onchange="this.form.submit()" />
+                      <label for="crossbody">Crossbody</label>
+                    </div>
+                    <div class="opcao-side-categoria">
+                      <input type="radio" name="categoria" id="bucket"
+                      style="accent-color: black;" value="Bucket" {% if
+                      categoria_selecionada == 'Bucket' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="bucket">Bucket</label>
+                    </div>
+                    <div class="opcao-side-categoria">
+                      <input type="radio" name="categoria" id="baguette"
+                      style="accent-color: black;" value="Baguette" {% if
+                      categoria_selecionada == 'Baguette' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="baguette">Baguette</label>
+                    </div>
+                    <div class="opcao-side-categoria">
+                      <input type="radio" name="categoria" id="shoulder-bag"
+                      style="accent-color: black;" value="Shoulder bag" {% if
+                      categoria_selecionada == 'Shoulder bag' %} checked {%
+                      endif %} onchange="this.form.submit()" />
+                      <label for="shoulder-bag">Shoulder bag</label>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="opcao-cor" id="opcao-cor">
+                  <h3 class="text-side-cor">Cor</h3>
+                  <img
+                    class="icone-mais-cor"
+                    id="icone-mais-cor"
+                    src="../../static/uploads/icones/icone-mais.png"
+                    alt="icone mais"
+                  />
+                  <img
+                    class="icone-menos-cor"
+                    id="icone-menos-cor"
+                    src="../../static/uploads/icones/icone-menos.png"
+                    alt="icone menos"
+                  />
+                </div>
+                <div class="opcoes-side-cor" id="opcoes-side-cor">
+                  <form action="/produtos" method="get">
+                    {% if categoria_selecionada %}
+                    <input
+                      type="hidden"
+                      name="categoria"
+                      value="{{ categoria_selecionada }}"
+                    />
+                    {% endif %}
+
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="preto" value="Preto" {%
+                      if cor_selecionada == 'Preto' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="preto">Preto</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="marrom" value="Marrom"
+                      {% if cor_selecionada == 'Marrom' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="marrom">Marrom</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="bege" value="Bege" {%
+                      if cor_selecionada == 'Bege' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="bege">Bege</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="azul" value="Azul" {%
+                      if cor_selecionada == 'Azul' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="azul">Azul</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="verde" value="Verde" {%
+                      if cor_selecionada == 'Verde' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="verde">Verde</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="cinza" value="Cinza" {%
+                      if cor_selecionada == 'Cinza' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="cinza">Cinza</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="natural"
+                      value="Natural" {% if cor_selecionada == 'Natural' %}
+                      checked {% endif %} onchange="this.form.submit()" />
+                      <label for="natural">Natural</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="rosa" value="Rosa" {%
+                      if cor_selecionada == 'Rosa' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="rosa">Rosa</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="roxo" value="Roxo" {%
+                      if cor_selecionada == 'Roxo' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="roxo">Roxo</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="vermelho"
+                      value="Vermelho" {% if cor_selecionada == 'Vermelho' %}
+                      checked {% endif %} onchange="this.form.submit()" />
+                      <label for="vermelho">Vermelho</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="prata" value="Prata" {%
+                      if cor_selecionada == 'Prata' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="prata">Prata</label>
+                    </div>
+                    <div class="opcao-side-cor">
+                      <input type="radio" name="cor" id="branco" value="Branco"
+                      {% if cor_selecionada == 'Branco' %} checked {% endif %}
+                      onchange="this.form.submit()" />
+                      <label for="branco">Branco</label>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
-            <div class="inline right-header">
-                <a href=""><img src="/static/uploads/icons_header/coracao.png" alt=""></a>
-                <a href="/meus-pedidos" class="carrinho-icon">
-                    <img src="/static/uploads/icons_header/icon_carrinho.png" alt="">
-                    <span id="contador-carrinho" class="badge">0</span>
+            <!-- Bolsas -->
+            <div class="grid">
+              {% for i in produtos %}
+              <div class="item">
+                <a href="/produto/{{ i.id }}">
+                  <img
+                    src="/static/uploads/bolsas/{{ i.imagem }}"
+                    alt="Sem foto"
+                  />
                 </a>
-                <a href="/login">Login</a>
+                <a href="/produto/{{ i.id }}"> <h3>{{ i.nome }}</h3> </a>
+                <p>R${{ '%.2f' % i.preco }}</p>
+              </div>
+              {% endfor %}
             </div>
-        </header>
-
-        <!-- Produtos -->
-        <section id="container">
-            <div class="fundo_preto">
-                <div class="caixa_fundo_preto">
-                    <h2  class="titulo">Loja Feminina</h2>
-                    <p class="subtitulo">Renove sua presença com bolsas que celebram tanto a <br> modernidade quanto a tradição da verdadeira elegância.</p>
-                </div>
-            </div>
-
-            <div class="produtos">
-                <div class="categoria">
-                    
-                    <!-- Filtros -->
-                    <div class="filtros">
-                        <div class="filtros-header">
-                            <h3>Filtros</h3>
-                            <a href="#" class="limpar">Limpar filtros</a>
-                        </div>
-
-                        <!-- Categorias -->
-                        <div class="filtro-categorias">
-                            <h4>Categorias</h4>
-                            <form action="/produtos" method="get">
-                              <label><input class="transparent" type="checkbox" checked> Todos</label>
-                              <label><input type="radio" name="categoria" value="Clutch"> Clutch</label>
-                              <label><input type="radio" name="categoria" value="Tote"> Tote</label>
-                              <label><input type="radio" name="categoria" value="Crossbody"> Crossbody</label>
-                              <label><input type="radio" name="categoria" value="Bucket"> Bucket</label>
-                              <label><input type="radio" name="categoria" value="Baguette"> Baguette</label>
-                              <label><input type="radio" name="categoria" value="Shoulder bag"> Shoulder bag</label>
-                              <button type="submit">Filtrar</button>
-                            </form>
-                            
-                        </div>
-
-                        <!-- Cores -->
-                        <div class="filtro-cores">
-                            <h4>Cores</h4>
-                            <div class="cores">
-                                <a href=""><span class="cor" style="background:#d28b59"></span></a>
-                                <a href=""><span class="cor" style="background:#00a651"></span></a>
-                                <a href=""><span class="cor" style="background:#fff; border:1px solid #ccc"></span></a>
-                                <a href=""><span class="cor" style="background:#000"></span></a>
-                                <a href=""><span class="cor" style="background:#ffed00"></span></a>
-                                <a href=""><span class="cor" style="background:#ed1c24"></span></a>
-                                <a href=""><span class="cor" style="background:#0072bc"></span></a>
-                                <a href=""><span class="cor" style="background:#ec008c"></span></a>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Bolsas -->
-                
-                    <div class="grid">
-                        {%for i in produtos%}
-                            <div class="item">
-                                <a href="/produto/{{i.id}}">
-                                  <img src="/static/uploads/bolsas/{{i.imagem}}" alt="Sem foto">
-                                </a>
-                                <a href="/produto/{{i.id}}">
-                                    <h3>{{i.nome}}</h3>
-                                </a>
-                                <p>R${{ '%.2f' % i.preco }}</p>
-                            </div>
-                        {%endfor%}
-                    </div>
-                    <div class="carregar_produtos">
-                        {% if produtos %}
-                            <a href="/produtos?offset={{ offset + limit }}&limit={{ limit }}{% if categoria %}&categoria={{ categoria }}{% endif %}" class="button_carregar_produtos">Carregar Mais Produtos</a>
-                        {% endif %}
-                    </div>
-            </div>
-        </section>
-        
-        <!-- Footer -->
-        <footer class="footer-newsletter">
-            <div class="footer-container">
-                <!-- Newsletter -->
-                <div class="newsletter-section">
-                    <h2>Inscreva-se na nossa newsletter</h2>
-                    <p>Seja o primeiro a saber sobre nossas ofertas especiais,<br>lançamentos de novos produtos e
-                        eventos</p>
-                    <form class="newsletter-form">
-                        <input type="email" placeholder="Adicionar Email" required>
-                        <button type="submit">Inscrever-se</button>
-                    </form>
-                </div>
-
-                <!-- Links -->
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h3>Comprar</h3>
-                        <a href="#">Mulheres</a>
-                        <a href="#">Cartões-presente</a>
-                        <a href="#">Oferta</a>
-                    </div>
-                    <div class="footer-column">
-                        <h3>Ajuda</h3>
-                        <a href="#">Central de Ajuda</a>
-                        <a href="#">Status do pedido</a>
-                        <a href="#">Tabela de tamanhos</a>
-                        <a href="#">Devoluções e Garantia</a>
-                        <a href="#">Contate-nos</a>
-                    </div>
-                    <div class="footer-column">
-                        <h3>Sobre</h3>
-                        <a href="#">Sobre nós</a>
-                        <a href="#">Responsabilidade</a>
-                        <a href="#">Tecnologia e Inovação</a>
-                        <a href="#">Explore nossas histórias</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
+          </div>
+        </div>
+      </section>
     </main>
+    <footer class="footer-newsletter">
+      <div class="footer-container">
+        <!-- Newsletter -->
+        <div class="newsletter-section">
+          <h2>Inscreva-se na nossa newsletter</h2>
+          <p>
+            Seja o primeiro a saber sobre nossas ofertas especiais, lançamentos
+            de novos produtos e eventos
+          </p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Adicionar Email" required />
+            <button type="submit">Inscrever-se</button>
+          </form>
+        </div>
+        <!-- Links -->
+        <div class="footer-links">
+          <div class="footer-column">
+            <h3>Comprar</h3>
+            <a href="#">Mulheres</a> <a href="#">Cartões-presente</a>
+            <a href="#">Oferta</a>
+          </div>
+          <div class="footer-column">
+            <h3>Ajuda</h3>
+            <a href="#">Central de Ajuda</a> <a href="#">Status do pedido</a>
+            <a href="#">Tabela de tamanhos</a>
+            <a href="#">Devoluções e Garantia</a> <a href="#">Contate-nos</a>
+          </div>
+          <div class="footer-column">
+            <h3>Sobre</h3>
+            <a href="#">Sobre nós</a> <a href="#">Responsabilidade</a>
+            <a href="#">Tecnologia e Inovação</a>
+            <a href="#">Explore nossas histórias</a>
+          </div>
+        </div>
+      </div>
+    </footer>
     <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
-</body>
+  </body>
 </html>

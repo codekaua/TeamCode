@@ -63,3 +63,82 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+const opcao_categoria = document.getElementById("opcao-categoria");
+const opcoes_side_cetegoria = document.getElementById("opcoes-side-cetegoria");
+const icone_mais = document.getElementById("icone-mais");
+const icone_menos = document.getElementById("icone-menos");
+
+const opcao_cor = document.getElementById("opcao-cor");
+const opcoes_side_cor = document.getElementById("opcoes-side-cor");
+const icone_mais_cor = document.getElementById("icone-mais-cor");
+const icone_menos_cor = document.getElementById("icone-menos-cor");
+
+
+const radios = document.querySelectorAll('input[name="categoria"]');
+const radios_cor = document.querySelectorAll('input[name="cor"]');
+const limpar_filtro = document.getElementById("limpar-filtro");
+
+const filtro_mobile = document.getElementById("filtro-mobile")
+const side = document.getElementById("side")
+const fechar_filtro_mobile = document.getElementById("icone-fechar")
+
+fechar_filtro_mobile.addEventListener("click", () => {
+  side.style.display = "none";
+  overlay.style.display = "none";       // esconde overlay
+  document.body.style.overflow = "auto";  // libera scroll da página
+})
+
+filtro_mobile.addEventListener("click", () =>{
+  side.style.display = "block";
+  overlay.style.display = "block";       // mostra overlay
+  document.body.style.overflow = "hidden"; // bloqueia scroll da página
+})
+
+overlay.addEventListener("click", () => {
+  side.style.display = "none";
+  overlay.style.display = "none";
+  document.body.style.overflow = "auto";
+});
+
+radios.forEach((radio) => {
+  radio.addEventListener("click", () => {
+    limpar_filtro.style.display = "block";
+  });
+});
+
+radios_cor.forEach((radio) => {
+  radio.addEventListener("click", () => {
+    limpar_filtro.style.display = "block";
+  });
+});
+
+limpar_filtro.addEventListener("click", () => {
+  radios.forEach((r) => (r.checked = false));
+  limpar_filtro.style.display = "none";
+  window.location.href = window.location.pathname;
+});
+
+opcao_categoria.addEventListener("click", () => {
+  if (opcoes_side_cetegoria.style.display === "none") {
+    opcoes_side_cetegoria.style.display = "block";
+    icone_menos.style.display = "block";
+    icone_mais.style.display = "none";
+  } else {
+    opcoes_side_cetegoria.style.display = "none";
+    icone_menos.style.display = "none";
+    icone_mais.style.display = "block";
+  }
+});
+
+opcao_cor.addEventListener("click", () => {
+  if (opcoes_side_cor.style.display === "none") {
+    opcoes_side_cor.style.display = "block";
+    icone_menos_cor.style.display = "block";
+    icone_mais_cor.style.display = "none";
+  } else {
+    opcoes_side_cor.style.display = "none";
+    icone_menos_cor.style.display = "none";
+    icone_mais_cor.style.display = "block";
+  }
+});

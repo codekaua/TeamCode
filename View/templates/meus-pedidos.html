@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus pedidos</title>
+</head>
+<body>
+    <h1>Meus Pedidos</h1>
+    <div class="info">
+        {% if pedidos %}
+            {% for pedido in pedidos %}
+                <p><strong>ID do Pedido:</strong> {{ pedido.id }}</p>
+                <p><strong>Total:</strong> R$ {{ pedido.total }}</p>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <p>Você ainda não possui pedidos.</p>
+        {% endif %}
+    </div>
+    <a href="/me/produtos">Voltar</a>
+
+</body>
+</html>

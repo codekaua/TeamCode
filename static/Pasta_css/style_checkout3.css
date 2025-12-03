@@ -6,89 +6,89 @@
 }
 
 #container_main {
-    margin: 0 auto;
-    /*deixar os elementos no meio*/
-    box-sizing: border-box; 
+  margin: 0 auto;
+  box-sizing: border-box;
 }
- /* Header */
+
+/* Header */
 #container_header {
-    position: relative;   /* referência para os filhos */
-    margin: 0 auto;
-    width: 100%;
-    height: 50px;         /* altura fixa do header */
-    padding: 15px;
-    background-color: #000;
-    border-bottom: 1px solid #fff;
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  height: 50px;
+  padding: 15px;
+  background-color: #000;
+  border-bottom: 1px solid #fff;
 }
 
 /* links em linha */
 .inline {
-    display: flex;
-    flex-direction: row;
-    gap: 25px;
+  display: flex;
+  flex-direction: row;
+  gap: 25px;
 }
 
 /* bloco da esquerda */
 .left-header {
-    position: absolute;
-    top: 15px;
-    left: 80px;  /* você pode mudar esse valor */
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  position: absolute;
+  top: 15px;
+  left: 80px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .left-header h2 {
-    font-size: 25px;
-    line-height: 1.6;
-    color: white;
+  font-size: 25px;
+  line-height: 1.6;
+  color: white;
 }
 
 .left-header a {
-    font-size: 17px;
-    text-decoration: none;
-    font-weight: 500;
-    color: white;
+  font-size: 17px;
+  text-decoration: none;
+  font-weight: 500;
+  color: white;
 }
 
 /* pesquisa */
 #pesquisar {
-    background-color: transparent;
-    border: none;
-    color: white;
+  background-color: transparent;
+  border: none;
+  color: white;
 }
 
 /* bloco da direita */
 .right-header {
-    position: absolute;
-    top: 25px;
-    right: 80px;  /* você pode mudar esse valor */
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  position: absolute;
+  top: 25px;
+  right: 80px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .right-header form input {
-    border: none;
+  border: none;
 }
 
 .right-header a {
-    font-size: 17px;
-    text-decoration: none;
-    font-weight: 500;
-    color: white;
+  font-size: 17px;
+  text-decoration: none;
+  font-weight: 500;
+  color: white;
 }
 
 .icones {
-    width: 25px;
+  width: 25px;
 }
 
-/* estilização do icone user -----------------*/
+/* estilização do icone user */
 #foto-perfil {
   margin-left: 15px;
   width: 40px;
-  border-radius: 50%;       
-  object-fit: cover;        
+  border-radius: 50%;
+  object-fit: cover;
   transition: box-shadow 0.5s ease;
 }
 
@@ -98,36 +98,35 @@
 }
 
 .perfil-menu-container {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 /* Menu pop-up */
 .popup-menu {
-    display: none; /* escondido por padrão */
-    position: absolute;
-    right: 0; /* alinha à direita da foto de perfil */
-    background-color: #fff;
-    min-width: 160px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    border-radius: 5px;
-    z-index: 10;
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  z-index: 10;
 }
 
 /* Links do menu */
 .popup-menu a {
-    display: block;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
 }
 
 /* Hover nos links */
 .popup-menu a:hover {
-    background-color: #f1f1f1;
+  background-color: #f1f1f1;
 }
-/* -------------------- */
 
 .produto-container {
   position: relative;
@@ -138,7 +137,7 @@
   margin: 0 auto;
 }
 
-.info_envio{
+.info_envio {
   margin-bottom: 15px;
   font-size: 22px;
   font-weight: bold;
@@ -165,15 +164,12 @@
   text-align: center;
 }
 
-/*  */
-
 .checkout {
   display: flex;
   justify-content: space-between;
   padding: 40px;
   gap: 40px;
 }
-
 
 .form-section {
   flex: 2;
@@ -199,13 +195,14 @@
   gap: 10px;
 }
 
-form input, form select {
+form input,
+form select {
   padding: 10px;
   border: 1px solid #ccc;
   flex: 1;
 }
 
-.botao-continuar { 
+.botao-continuar {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
@@ -219,7 +216,24 @@ form input, form select {
   text-align: center;
   text-decoration: none;
 }
+
 .botao-continuar:hover {
+  background-color: #333;
+}
+
+#btnCalcularFrete {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  background-color: #000;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#btnCalcularFrete:hover {
   background-color: #333;
 }
 
@@ -250,8 +264,167 @@ form input, form select {
   margin: 10px 0;
 }
 
-.remover_pedido{
+.remover_pedido {
   margin-bottom: 10px;
   padding: 2px;
   font-weight: bold;
+}
+
+/* ==================== RESPONSIVO ==================== */
+@media (max-width: 768px) {
+  /* Header responsivo */
+  #container_header {
+    padding-top: 28px;
+    width: 100%;
+    height: 10px;
+  }
+
+  /* Lado esquerdo */
+  .left-header {
+    left: 25px;
+    gap: 10px;
+    top: 4px;
+  }
+  .left-header a {
+    font-size: 11px;
+  }
+  .left-header a h2 {
+    font-size: 12px;
+    margin-bottom: 1.65px;
+  }
+  .form-pesquisa {
+    width: 120px;
+    height: 20px;
+    margin-bottom: 8px;
+  }
+  #pesquisar {
+    width: 45%;
+    height: 90%;
+  }
+  #pesquisar::placeholder {
+    font-size: 11px;
+    padding-bottom: 3px;
+  }
+  .icones {
+    width: 17px;
+  } /* Lado direito */
+  .right-header {
+    margin-right: 15px;
+    right: 30px;
+    gap: 8px;
+    height: 8px;
+  }
+  .right-header a img {
+    width: 15px;
+  }
+  .right-header a span {
+    top: -5px;
+    font-size: 7px;
+    width: 3px;
+  }
+  .right-header a {
+    font-size: 10px;
+  }
+
+  #foto-perfil {
+    margin-left: 5px;
+    margin-bottom: 2px;
+    height: 20px !important;
+    width: 20px !important;
+  }
+
+  /* Checkout responsivo */
+  .checkout {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .form-section {
+    flex: 1;
+  }
+
+  .form-section h1 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .steps {
+    font-size: 12px;
+    margin-bottom: 15px;
+  }
+
+  .form-section form {
+    gap: 12px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  form input,
+  form select {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .info_envio {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .cart-section {
+    flex: 1;
+    padding: 20px;
+    background: #f5f5f5;
+  }
+
+  .cart-section input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .cart-section h3 {
+    font-size: 16px;
+  }
+
+  .summary {
+    font-size: 13px;
+  }
+
+  .summary p {
+    margin: 8px 0;
+  }
+
+  .remover_pedido {
+    width: 100%;
+    padding: 8px 5px;
+    font-size: 12px;
+  }
+
+  #btnCalcularFrete {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  #foto-perfil {
+    width: 35px;
+    margin-left: 10px;
+  }
+
+  .perfil-menu-container {
+    position: relative;
+  }
+
+  .popup-menu {
+    right: -20px;
+    min-width: 140px;
+  }
+
+  .popup-menu a {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
 }
