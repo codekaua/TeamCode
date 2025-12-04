@@ -70,7 +70,7 @@ class Comentario(Base):
 # CREATE
 def create(nome:str, preco:float, quantidade:int, categoria:str, cor:str, imagem:str, detalhe1:str, detalhe2:str, detalhe3:str, detalhe4:str):
     session = SessionLocal()
-    produto=Produto(nome=nome, preco=preco, quantidade=quantidade, categoria=categoria, cor=cor, imagem=imagem, detalhe1=detalhe1, detalhe2=detalhe2, detalhe3=detalhe3, detalhe4=detalhe4)
+    produto=Produto(nome=nome, preco=preco, quantidade=quantidade, categoria=categoria, cor=cor, imagem=imagem, detalhe_1=detalhe1, detalhe_2=detalhe2, detalhe_3=detalhe3, detalhe_4=detalhe4)
     session.add(produto)
     session.commit()
     session.close()
@@ -92,10 +92,10 @@ def update(id_produto:int, novo_nome:str, novo_preco:float, nova_categoria:str, 
         produto.categoria = nova_categoria
         produto.cor = nova_cor
         produto.imagem = nova_imagem
-        produto.detalhe1 = novo_detalhe1
-        produto.detalhe2 = novo_detalhe2
-        produto.detalhe3 = novo_detalhe3
-        produto.detalhe4 = novo_detalhe4
+        produto.detalhe_1 = novo_detalhe1
+        produto.detalhe_2 = novo_detalhe2
+        produto.detalhe_3 = novo_detalhe3
+        produto.detalhe_4 = novo_detalhe4
         session.commit()
     session.close()
 
@@ -128,3 +128,13 @@ def create_usuario(nome:str, email:str, senha:str, is_admin:bool):
 # Visita.__table__.create(bind=engine, checkfirst=True)
 
 # Visita.__table__.drop(engine)  apaga a tabela
+
+# Criar produtos
+
+# create("Clutch Elegance", 2450.00, 28, "Clutch", "Preto", "clutch-elegance-principal.png", "clutch-elegance-detalhe1.png", "clutch-elegance-detalhe2.png", "clutch-elegance-detalhe3.png", "clutch-elegance-detalhe4.png")
+# create("Tote Classic", 3850.00, 17, "Tote", "Preto", "tote-classic-principal.png", "tote-classic-detalhe1.png", "tote-classic-detalhe2.png", "tote-classic-detalhe3.png", "tote-classic-detalhe4.png")
+# create("Crossbody Mini", 1850.00, 42, "Crossbody", "Preto", "crossbody-mini-principal.png", "crossbody-mini-detalhe1.png", "crossbody-mini-principal.png", "crossbody-mini-principal.png", "crossbody-mini-detalhe1.png")
+# create("Bucket Drawstring", 2450.00, 29, "Bucket", "Preto", "bucket-drawstring-principal.png", "bucket-drawstring-detalhe1.png", "bucket-drawstring-detalhe2.png", "bucket-drawstring-detalhe3.png", "bucket-drawstring-detalhe4.png")
+# create("Baguette Classic", 4550.00, 13, "Baguette", "Preto", "baguette-classic-principal.png", "baguette-classic-detalhe1.png", "baguette-classic-detalhe2.png", "baguette-classic-detalhe3.png", "baguette-classic-detalhe4.png")
+# create("Shoulder Bag Classic", 2850.00, 25, "Shoulder bag", "Preto", "shoulder-bag-classic-principal.png", "shoulder-bag-classic-detalhe1.png", "shoulder-bag-classic-detalhe2.png", "shoulder-bag-classic-detalhe3.png", "shoulder-bag-classic-detalhe4.png")
+# create("Clutch Minimalist", 1250.00, 33, "Clutch", "Azul", "clutch-minimalist-principal.png", "clutch-minimalist-detalhe1.png", "clutch-minimalist-detalhe2.png", "clutch-minimalist-detalhe3.png", "clutch-minimalist-detalhe4.png")

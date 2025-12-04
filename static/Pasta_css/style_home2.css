@@ -732,3 +732,9 @@
     top: auto;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  #intro {
+    background: white; 
+  }
+}
