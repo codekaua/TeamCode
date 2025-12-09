@@ -345,7 +345,6 @@ async def cadastrar_usuario(
 carrinhos = {}
 # rotas para carrinho
 
-
 @router.post("/carrinho/adicionar/{id_produto}")
 async def adicionar_carrinho(
     request: Request,
@@ -410,13 +409,10 @@ async def ver_carrinho(request: Request, db: Session = Depends(get_db)):
             usuario = db.query(Usuario).filter(Usuario.email == email).first()
     carrinho = carrinhos.get(usuario.id, [])
     # itens = db.query(Carrinho).filter(Carrinho.id_usuario == usuario.id).all()
-    total = round(sum(item["preco"]*item["quantidade"]
-                  for item in carrinho), 2)
 
     return templates.TemplateResponse("carrinho.html", {
         "request": request,
         "carrinho": carrinho,
-        "total": total,
         "usuario": usuario
     })
 

@@ -1,128 +1,230 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Carrinho</title>
-    <link rel="stylesheet" href="style_carrinho3.css" />
-    <link
-      rel="stylesheet"
-      href="{{url_for('static', path='Pasta_css/style_carrinho3.css') }}"
-    />
-  </head>
-  <body>
-    <header id="container_header">
-      <div class="inline left-header">
-        <a href="/"><h2>BolsasBR</h2></a>
-        <a href="/produtos">Loja</a>
-        <a href="/sobre">Sobre</a>
-        <form action="">
-          <label for="pesquisar"
-            ><img
-              class="icones"
-              src="/static/uploads/icons_header/lupa.png"
-              alt=""
-          /></label>
-          <input type="text" id="pesquisar" placeholder="Pesquisar" />
-        </form>
-      </div>
-      <div class="inline right-header">
-        {% if usuario %}
-        <a href=""
-          ><img src="/static/uploads/icons_header/coracao.png" alt=""
-        /></a>
-        <a href="/meus-pedidos" class="carrinho-icon">
-          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-          <span id="contador-carrinho" class="badge">0</span>
-        </a>
-        <div class="perfil-menu-container">
-          <img
-            id="foto-perfil"
-            src="/static/uploads/icons_header/img-perfil.png"
-            alt="imagem de perfil"
-            onclick="toggleMenu()"
-          />
 
-          <div id="menu-perfil" class="popup-menu">
-            <a href="/me/dados">Meus Dados</a>
-            <a href="/me/pedidos">Meus Pedidos</a>
-            <a href="/logout">Sair</a>
-          </div>
-        </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho de Compras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{url_for('static', path='Pasta_css/style_carrinho3.css') }}" />
+</head>
 
-        <script>
-          function toggleMenu() {
-            const menu = document.getElementById("menu-perfil");
-            menu.style.display =
-              menu.style.display === "block" ? "none" : "block";
-          }
+<body>
 
-          // Fecha o menu se clicar fora
-          window.onclick = function (event) {
-            const menu = document.getElementById("menu-perfil");
-            const foto = document.getElementById("foto-perfil");
-            if (!foto.contains(event.target) && !menu.contains(event.target)) {
-              menu.style.display = "none";
-            }
-          };
-        </script>
-        {% else %}
-        <a href=""
-          ><img src="/static/uploads/icons_header/coracao.png" alt=""
-        /></a>
-        <a href="/meus-pedidos" class="carrinho-icon">
-          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-          <span id="contador-carrinho" class="badge">0</span>
-        </a>
-        <a href="/login">Login</a>
-        {% endif %}
-      </div>
-    </header>
 
-    <div class="container">
-      <div class="cart">
-        <h2>Seu Carrinho</h2>
-        <p>Confira seus pedidos e finalize a compra.</p>
-
-        <div id="cart-items"></div>
-
-        <div class="order-info">
-          <h3>Informações do Pedido</h3>
-          <div class="accordion">
-            <div>Política de Devolução <span>+</span></div>
-            <div>Opções de Envio <span>+</span></div>
-            <div>Política de Pagamento <span>+</span></div>
-          </div>
-        </div>
-      </div>
-
-      {% if carrinho %}
-      <!-- {% for item in carrinho %} -->
-      <div class="summary">
-        <h3>Resumo do Pedido</h3>
-        <input type="text" placeholder="Código do Cupom" />
-        <div class="line">
-          <span>Subtotal</span><span id="subtotal">R$ {{ total }}</span>
-        </div>
-        <div class="line">
-          <span>Quantidade</span><span>{{ item["quantidade"] }}</span>
-        </div>
-        <div class="line total">
-          <span>Total</span><span id="total">R$ {{ total }}</span>
-        </div>
-        <form action="/checkout" method="post">
-          <button type="submit">Prosseguir com a compra</button>
-        </form>
-        <!-- <form action="/carrinho/remover/{{item.id}}" method="post">
-            <button type="submit" class="btn btn-danger">Remover</button>
-          </form> -->
-      </div>
-      <!-- {% endfor %} -->
-      {% else %}
-      <p>Seu carrinho está vazio.</p>
-      {% endif %}
+  <main class="container">
+    <div class="section-header">
+      <h1 class="page-title">Seu Carrinho</h1>
+      <p class="page-subtitle">Revise seus itens selecionados</p>
     </div>
-    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
-    <!-- <script src="script.js"></script> -->
-  </body>
+
+    <div class="main-content">
+      <div class="cart-section">
+        {% for i in carrinho %}
+        <div class="cart-items">
+          <div>
+            <div class="cart-item" data-id="1">
+              <div class="item-select">
+                <input type="checkbox" class="custom-checkbox" id="item-1" checked>
+                <label for="item-1"></label>
+              </div>
+
+              <div class="item-image">
+                <img src="/placeholder.svg?height=160&width=160" alt="Luvas de Boxe">
+              </div>
+
+              <div class="item-details">
+                <h3 class="item-name">{{ i.nome }}</h3>
+                <p class="item-availability">+{{ i.quantidade }} disponíveis</p>
+              </div>
+
+              <div class="item-actions">
+                <div class="quantity-control">
+                  <button class="qty-btn" onclick="updateQuantity(1, -1)">−</button>
+                  <input type="text" class="qty-input" value="3" readonly>
+                  <button class="qty-btn" onclick="updateQuantity(1, 1)">+</button>
+                </div>
+                <button class="remove-btn" onclick="removeItem(1)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="item-price">
+                <div class="price">{{ i.preco }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Shipping Info -->
+        <div class="shipping-info">
+          <div class="shipping-icon">✓</div>
+          <div>
+            <div class="shipping-text">
+              <span class="shipping-label">Frete</span>
+              <span class="shipping-status">Grátis</span>
+            </div>
+            <p class="shipping-description">
+              Aproveite o frete grátis na sua primeira compra adicionando mais produtos
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Section -->
+      <aside class="summary-section">
+        <div class="summary-card">
+          <h2 class="summary-title">Resumo</h2>
+
+          <div class="summary-details">
+            <div class="summary-row">
+              <span class="summary-label">Produtos (3)</span>
+              <div class="summary-prices">
+                <span class="summary-old-price">R$ 233,88</span>
+                <span class="summary-value">R$ 226,88</span>
+              </div>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Frete</span>
+              <span class="summary-free">Grátis</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="coupon-section">
+              <input type="text" class="coupon-input" placeholder="Código do cupom">
+              <button class="coupon-btn">Aplicar</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="summary-total">
+              <span class="total-label">Total</span>
+              <div class="total-value">R$ 226,<sup>05</sup></div>
+            </div>
+          </div>
+
+          <button class="checkout-btn">
+            <span>Finalizar Compra</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <div class="trust-badges">
+            <div class="trust-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>Compra Segura</span>
+            </div>
+            <div class="trust-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              <span>Entrega Garantida</span>
+            </div>
+            <div class="trust-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+              <span>Suporte 24/7</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Update quantity
+    function updateQuantity(itemId, change) {
+      const item = document.querySelector(`.cart-item[data-id="${itemId}"]`)
+      const input = item.querySelector(".qty-input")
+      const currentValue = Number.parseInt(input.value)
+      const newValue = currentValue + change
+
+      if (newValue >= 1) {
+        input.value = newValue
+        updateSummary()
+      }
+    }
+
+    // Remove item
+    function removeItem(itemId) {
+      const item = document.querySelector(`.cart-item[data-id="${itemId}"]`)
+      item.style.opacity = "0"
+      item.style.transform = "translateX(-20px)"
+
+      setTimeout(() => {
+        item.remove()
+        updateSummary()
+        checkEmptyCart()
+      }, 300)
+    }
+
+    // Update summary
+    function updateSummary() {
+      const checkboxes = document.querySelectorAll(".custom-checkbox:checked")
+      let totalItems = 0
+      let totalPrice = 0
+
+      checkboxes.forEach((checkbox) => {
+        const item = checkbox.closest(".cart-item")
+        const quantity = Number.parseInt(item.querySelector(".qty-input").value)
+        const priceText = item.querySelector(".item-price .price").textContent
+        const price = Number.parseFloat(priceText.replace("R$ ", "").replace(",", "."))
+
+        totalItems += quantity
+        totalPrice += price * quantity
+      })
+
+      // Update summary display
+      const summaryLabel = document.querySelector(".summary-label")
+      summaryLabel.textContent = `Produtos (${totalItems})`
+
+      const summaryValue = document.querySelector(".summary-value")
+      summaryValue.textContent = `R$ ${totalPrice.toFixed(2).replace(".", ",")}`
+
+      const totalValue = document.querySelector(".total-value")
+      totalValue.innerHTML = `R$ ${totalPrice.toFixed(2).split(".")[0]},<sup>${totalPrice.toFixed(2).split(".")[1]}</sup>`
+    }
+
+    // Check if cart is empty
+    function checkEmptyCart() {
+      const items = document.querySelectorAll(".cart-item")
+      if (items.length === 0) {
+        const cartItems = document.querySelector(".cart-items")
+        cartItems.innerHTML = `
+            <div style="text-align: center; padding: 4rem 2rem;">
+                <h3 style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 1rem;">Seu carrinho está vazio</h3>
+                <p style="color: var(--color-gray-500); margin-bottom: 2rem;">Adicione produtos para começar suas compras</p>
+                <button onclick="window.location.href='#'" style="padding: 1rem 2rem; background: var(--color-black); color: var(--color-white); border: none; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                    Continuar Comprando
+                </button>
+            </div>
+        `
+      }
+    }
+
+    // Add event listeners to checkboxes
+    document.querySelectorAll(".custom-checkbox").forEach((checkbox) => {
+      checkbox.addEventListener("change", updateSummary)
+    })
+
+    // Initialize
+    updateSummary()
+
+  </script>
+</body>
+
 </html>
