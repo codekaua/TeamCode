@@ -43,7 +43,7 @@
         <a href=""
           ><img src="/static/uploads/icons_header/coracao.png" alt=""
         /></a>
-        <a href="/meus-pedidos" class="carrinho-icon">
+        <a href="/carrinho" class="carrinho-icon">
           <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
           <span id="contador-carrinho" class="badge">0</span>
         </a>
@@ -82,7 +82,7 @@
         <a href=""
           ><img src="/static/uploads/icons_header/coracao.png" alt=""
         /></a>
-        <a href="/meus-pedidos" class="carrinho-icon">
+        <a href="/carrinho" class="carrinho-icon">
           <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
           <span id="contador-carrinho" class="badge">0</span>
         </a>
@@ -159,12 +159,6 @@
               action="/carrinho/adicionar/{{produto.id}}"
               method="post"
             >
-              <input
-                type="hidden"
-                name="quantidade"
-                id="quantidade-hidden"
-                value="1"
-              />
               <button type="submit" class="btn-comprar">
                 Adicionar ao carrinho
               </button>

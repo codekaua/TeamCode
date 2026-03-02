@@ -1,0 +1,49 @@
+/* global.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
+body {
+    background-color: #fff;
+}
+
+/* Header Preto Fixo */
+#container_header {
+    background-color: #000 !important;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1000;
+}
+
+.left-header, .right-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#container_header a, #container_header h2 {
+    color: #fff !important;
+    text-decoration: none;
+}
+
+/* Badge do Carrinho */
+.badge {
+    background: #ff4747;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+/* Footer */
+.footer-newsletter {
+    background-color: #000;
+    color: #fff;
+    padding: 60px 5%;
+}

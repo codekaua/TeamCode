@@ -31,6 +31,7 @@ class Usuario(Base):
     is_admin = Column("is_admin", Boolean, default=False)
 
     pedidos = relationship("Pedido", back_populates="usuario")
+    carrinho = relationship("Carrinho", back_populates="usuario")
 
 class Pedido(Base):
     __tablename__ = "pedidos"
@@ -40,6 +41,15 @@ class Pedido(Base):
 
     usuario = relationship("Usuario", back_populates="pedidos")
     itens = relationship("ItemPedido", back_populates="pedido")
+
+class Carrinho(Base):
+    __tablename__ = "carrinho"
+    id = Column("id", Integer, primary_key=True, index=True)
+    id_usuario = Column("id_usuario", Integer, ForeignKey("usuarios.id")) # id do usuário que está adicionando ao carrinho
+    preco = Column("preco", Float)
+    quantidade = Column("quantidade", Integer, default=1)
+    
+    usuario = relationship("Usuario", back_populates="carrinho")
 
 class ItemPedido(Base):
     __tablename__ = "item_pedidos"
@@ -65,6 +75,22 @@ class Comentario(Base):
     comentario = Column(String, nullable=False)
     rating = Column(Integer, nullable=False)
     usuario = Column(String(100), nullable=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # CRUD PARA PRODUTOS
@@ -126,9 +152,9 @@ def create_usuario(nome:str, email:str, senha:str, is_admin:bool):
 # create("Bolsa Auxiliar", 7600.000, 10, "Tote", "marrom", "louis-vuitton-bolsa-carryall-vibe-mm-1.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif")
 # create_usuario("kaua", "kaua@gmail.com", gerar_hash_senha("123"), is_admin=True) 
 # create_usuario("kaua", "kauarp.rodrigues@gmail.com", gerar_hash_senha("123"), is_admin=False)
-# Visita.__table__.create(bind=engine, checkfirst=True)
+# Carrinho.__table__.create(bind=engine, checkfirst=True)
 
-# Visita.__table__.drop(engine)  apaga a tabela
+# Carrinho.__table__.drop(engine)  # apaga a tabela
 
 # Criar produtos
 
