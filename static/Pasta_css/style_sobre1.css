@@ -1,211 +1,151 @@
-/* CSS - Estilo da seção "Sobre Nós" */
-
-body {
+/* ==========================================================================
+   1. RESET E CONFIGURAÇÕES GLOBAIS
+   ========================================================================== */
+* {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", sans-serif;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
   background-color: #ffffff;
-  color: #333;
-}
-
-/* Header */
-#container_header {
-  position: relative; /* referência para os filhos */
-  margin: 0 auto;
-  width: 100%;
-  height: 80px; /* altura fixa do header */
-  padding: 76px 0px 0px 0px;
-  background-color: #000;
-  border-bottom: 1px solid #fff;
-}
-/* links em linha */
-.inline {
-  display: flex;
-  flex-direction: row;
-  gap: 25px;
-} /* bloco da esquerda */
-.left-header {
-  position: absolute;
-  top: 15px;
-  left: 80px; /* você pode mudar esse valor */
-  display: flex;
-  align-items: center;
-  width: auto;
-  gap: 20px;
-}
-.left-header h2 {
-  font-size: 25px;
+  color: #000;
+  overflow-x: hidden;
   line-height: 1.6;
-  color: white;
 }
-.left-header a {
-  font-size: 17px;
-  text-decoration: none;
-  font-weight: 500;
-  color: white;
-} /* pesquisa */
-#pesquisar {
-  background-color: transparent;
-  border: none;
-  color: white;
-} /* pesquisa */
-#pesquisar:focus {
-  outline: none;
-}
-#pesquisar::placeholder {
-  color: #aaa;
-  transition: color 0.5s ease;
-}
-#pesquisar:focus::placeholder {
-  color: white;
-} /* bloco da direita */
 
-.right-header {
-  position: absolute;
-  top: 25px;
-  right: 80px; /* você pode mudar esse valor */
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: 0.3s ease;
+}
+
+/* ==========================================================================
+   2. HEADER PREMIUM (Navegação e Ícones)
+   ========================================================================== */
+#header-premium {
+  height: 70px;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0 5%;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.98);
+  z-index: 1000;
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left,
+.header-right {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
-.right-header form input {
-  border: none;
+
+.header-right {
+  justify-content: flex-end;
 }
-.right-header a {
-  font-size: 17px;
-  text-decoration: none;
-  font-weight: 500;
-  color: white;
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 5px;
 }
-.icones {
-  width: 25px;
-}
-#foto-perfil {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
+
+.search-item {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
-  transition: box-shadow 0.3s ease;
 }
 
-#foto-perfil:hover {
-  box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.5);
+.header-container img {
+  width: 20px;
+  height: 20px;
+  transition: opacity 0.3s;
 }
 
+.header-container img:hover {
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   3. MENU DE PERFIL (USUÁRIO LOGADO)
+   ========================================================================== */
 .perfil-menu-container {
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+}
+
+#foto-perfil {
+  cursor: pointer;
 }
 
 .popup-menu {
-  display: none;
+  display: none; /* Ativado via JS toggleMenu() */
   position: absolute;
+  top: calc(100% + 20px);
   right: 0;
-  background-color: #fff;
-  min-width: 160px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  z-index: 10;
-  top: 100%;
-  margin-top: 5px;
+  background-color: #ffffff;
+  min-width: 200px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f0f0f0;
+  padding: 10px 0;
+  z-index: 1100;
+  animation: fadeInMenu 0.3s ease;
+}
+
+@keyframes fadeInMenu {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .popup-menu a {
   display: block;
-  padding: 10px 15px;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
+  padding: 12px 25px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #555;
+  font-weight: 400;
 }
 
 .popup-menu a:hover {
-  background-color: #f1f1f1;
+  background-color: #f9f9f9;
+  color: #000;
+  padding-left: 30px;
 }
 
-
-/* Badge carrinho */
-.carrinho-icon {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
+.menu-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 8px 0;
 }
 
-.badge {
-  position: absolute;
-  top: -8px;
-  right: -10px;
-  background: #ff4747;
-  color: #fff;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  font-weight: bold;
-  min-width: 20px;
-  text-align: center;
+.logout-link {
+  color: #888 !important;
 }
 
-/* ===== RESPONSIVIDADE ===== */
-@media (max-width: 768px) {
-  #container_header {
-    padding-top: 55px;
-    width: 100%;
-    height: 10px;
-  }
-
-
-  /* Lado esquerdo */
-  .left-header {
-    left: 25px;
-    gap: 10px;
-  }
-  .left-header a {
-    font-size: 11px;
-  }
-  .left-header a h2 {
-    font-size: 12px;
-    margin-bottom: 1.65px;
-  }
-  .form-pesquisa {
-    width: 120px;
-    height: 20px;
-    margin-bottom: 8px;
-  }
-  #pesquisar {
-    width: 45%;
-    height: 90%;
-  }
-  #pesquisar::placeholder {
-    font-size: 11px;
-    padding-bottom: 3px;
-  }
-  .icones {
-    width: 17px;
-  } /* Lado direito */
-  .right-header {
-    margin-right: 15px;
-    right: 20px;
-    gap: 8px;
-    height: 8px;
-  }
-  .right-header a img {
-    width: 15px;
-  }
-  .right-header a span {
-    top: -5px;
-    font-size: 7px;
-    width: 3px;
-  }
-  .right-header a {
-    font-size: 10px;
-  }
-
-  #foto-perfil {
-    margin-left: 5px;
-    width: 20px;
-    height: 20px;
-    margin-bottom: 2px;
-  }
+.logout-link:hover {
+  color: #000 !important;
 }
 /* -------------------- */
 .sobre-nos {

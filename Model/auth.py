@@ -38,5 +38,5 @@ def verificar_token(token:str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWSError:
+    except (JWSError, ExpiredSignatureError):
         return None

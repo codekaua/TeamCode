@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import text, DateTime, func
 from Model.conexaoDB import SessionLocal, Base, engine
 from Model.auth import gerar_hash_senha
+import random
+from Model.conexaoDB import SessionLocal
 
 # ORM de produto
 class Produto(Base):
@@ -31,6 +33,7 @@ class Usuario(Base):
     is_admin = Column("is_admin", Boolean, default=False)
 
     pedidos = relationship("Pedido", back_populates="usuario")
+    carrinho = relationship("Carrinho", back_populates="usuario")
 
 class Pedido(Base):
     __tablename__ = "pedidos"
@@ -40,6 +43,15 @@ class Pedido(Base):
 
     usuario = relationship("Usuario", back_populates="pedidos")
     itens = relationship("ItemPedido", back_populates="pedido")
+
+class Carrinho(Base):
+    __tablename__ = "carrinho"
+    id = Column("id", Integer, primary_key=True, index=True)
+    id_usuario = Column("id_usuario", Integer, ForeignKey("usuarios.id")) # id do usuário que está adicionando ao carrinho
+    preco = Column("preco", Float)
+    quantidade = Column("quantidade", Integer, default=1)
+    
+    usuario = relationship("Usuario", back_populates="carrinho")
 
 class ItemPedido(Base):
     __tablename__ = "item_pedidos"
@@ -65,7 +77,6 @@ class Comentario(Base):
     comentario = Column(String, nullable=False)
     rating = Column(Integer, nullable=False)
     usuario = Column(String(100), nullable=False)
-
 
 # CRUD PARA PRODUTOS
 # CREATE
@@ -109,7 +120,6 @@ def delete(id_produto:int):
         session.commit()
     session.close()
 
-
 # CRUD PARA USUARIOS 
 # create
 def create_usuario(nome:str, email:str, senha:str, is_admin:bool):
@@ -126,115 +136,156 @@ def create_usuario(nome:str, email:str, senha:str, is_admin:bool):
 # create("Bolsa Auxiliar", 7600.000, 10, "Tote", "marrom", "louis-vuitton-bolsa-carryall-vibe-mm-1.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif", "louis-vuitton-bolsa-carryall-vibe3.avif")
 # create_usuario("kaua", "kaua@gmail.com", gerar_hash_senha("123"), is_admin=True) 
 # create_usuario("kaua", "kauarp.rodrigues@gmail.com", gerar_hash_senha("123"), is_admin=False)
-# Visita.__table__.create(bind=engine, checkfirst=True)
+# Carrinho.__table__.create(bind=engine, checkfirst=True)
 
-# Visita.__table__.drop(engine)  apaga a tabela
+# Carrinho.__table__.drop(engine)  # apaga a tabela
 
-# Criar produtos
+# Lembre-se de importar a sua classe Produto!
 
-# create("Clutch Elegance", 2450.00, 28, "Clutch", "Preto", "clutch-elegance-principal.png", "clutch-elegance-detalhe1.png", "clutch-elegance-detalhe2.png", "clutch-elegance-detalhe3.png", "clutch-elegance-detalhe4.png")
-# create("Tote Classic", 3850.00, 17, "Tote", "Preto", "tote-classic-principal.png", "tote-classic-detalhe1.png", "tote-classic-detalhe2.png", "tote-classic-detalhe3.png", "tote-classic-detalhe4.png")
-# create("Crossbody Mini", 1850.00, 42, "Crossbody", "Preto", "crossbody-mini-principal.png", "crossbody-mini-detalhe1.png", "crossbody-mini-principal.png", "crossbody-mini-principal.png", "crossbody-mini-detalhe1.png")
-# create("Bucket Drawstring", 2450.00, 29, "Bucket", "Preto", "bucket-drawstring-principal.png", "bucket-drawstring-detalhe1.png", "bucket-drawstring-detalhe2.png", "bucket-drawstring-detalhe3.png", "bucket-drawstring-detalhe4.png")
-# create("Baguette Classic", 4550.00, 13, "Baguette", "Preto", "baguette-classic-principal.png", "baguette-classic-detalhe1.png", "baguette-classic-detalhe2.png", "baguette-classic-detalhe3.png", "baguette-classic-detalhe4.png")
-# create("Shoulder Bag Classic", 2850.00, 25, "Shoulder bag", "Preto", "shoulder-bag-classic-principal.png", "shoulder-bag-classic-detalhe1.png", "shoulder-bag-classic-detalhe2.png", "shoulder-bag-classic-detalhe3.png", "shoulder-bag-classic-detalhe4.png")
-# create("Clutch Minimalist", 1250.00, 33, "Clutch", "Azul", "clutch-minimalist-principal.png", "clutch-minimalist-detalhe1.png", "clutch-minimalist-detalhe2.png", "clutch-minimalist-detalhe3.png", "clutch-minimalist-detalhe4.png")
-# create("Default Clutch", 1350.00, 10, "Clutch", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1275.50, 10, "Crossbody", "Roxo", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1420.00, 10, "Baguette", "Prata", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1180.00, 10, "Shoulder bag", "Marrom", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1550.00, 10, "Bucket", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1320.00, 10, "Tote", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1250.00, 10, "Clutch", "Cinza", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1480.00, 10, "Crossbody", "Vermelho", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1190.00, 10, "Baguette", "Bege", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1650.00, 10, "Shoulder bag", "Preto", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1380.00, 10, "Bucket", "Natural", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1220.00, 10, "Tote", "Branco", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1570.00, 10, "Clutch", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1290.00, 10, "Crossbody", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1440.00, 10, "Baguette", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1160.00, 10, "Shoulder bag", "Cinza", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1520.00, 10, "Bucket", "Marrom", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1340.00, 10, "Tote", "Roxo", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1260.00, 10, "Clutch", "Preto", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1410.00, 10, "Crossbody", "Bege", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1180.00, 10, "Baguette", "Vermelho", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1630.00, 10, "Shoulder bag", "Prata", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1370.00, 10, "Bucket", "Branco", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1210.00, 10, "Tote", "Natural", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1590.00, 10, "Clutch", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1310.00, 10, "Crossbody", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1460.00, 10, "Baguette", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1140.00, 10, "Shoulder bag", "Marrom", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1540.00, 10, "Bucket", "Cinza", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1360.00, 10, "Tote", "Preto", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1240.00, 10, "Clutch", "Roxo", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1430.00, 10, "Crossbody", "Branco", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1170.00, 10, "Baguette", "Natural", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1610.00, 10, "Shoulder bag", "Bege", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1390.00, 10, "Bucket", "Vermelho", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1230.00, 10, "Tote", "Prata", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1560.00, 10, "Clutch", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1280.00, 10, "Crossbody", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1450.00, 10, "Baguette", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1150.00, 10, "Shoulder bag", "Preto", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1530.00, 10, "Bucket", "Roxo", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1330.00, 10, "Tote", "Cinza", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1255.00, 10, "Clutch", "Marrom", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1425.00, 10, "Crossbody", "Natural", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1195.00, 10, "Baguette", "Branco", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1645.00, 10, "Shoulder bag", "Vermelho", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1385.00, 10, "Bucket", "Bege", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1225.00, 10, "Tote", "Prata", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1585.00, 10, "Clutch", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1305.00, 10, "Crossbody", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1475.00, 10, "Baguette", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1135.00, 10, "Shoulder bag", "Cinza", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1555.00, 10, "Bucket", "Preto", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1355.00, 10, "Tote", "Roxo", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1275.00, 10, "Clutch", "Marrom", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1445.00, 10, "Crossbody", "Branco", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1205.00, 10, "Baguette", "Natural", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1625.00, 10, "Shoulder bag", "Bege", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1405.00, 10, "Bucket", "Vermelho", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1245.00, 10, "Tote", "Prata", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1575.00, 10, "Clutch", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1295.00, 10, "Crossbody", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1465.00, 10, "Baguette", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1145.00, 10, "Shoulder bag", "Cinza", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1545.00, 10, "Bucket", "Preto", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1365.00, 10, "Tote", "Roxo", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1265.00, 10, "Clutch", "Marrom", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1435.00, 10, "Crossbody", "Branco", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1215.00, 10, "Baguette", "Natural", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1635.00, 10, "Shoulder bag", "Bege", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1415.00, 10, "Bucket", "Vermelho", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1255.00, 10, "Tote", "Prata", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1595.00, 10, "Clutch", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1315.00, 10, "Crossbody", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1485.00, 10, "Baguette", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1155.00, 10, "Shoulder bag", "Cinza", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1565.00, 10, "Bucket", "Preto", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1375.00, 10, "Tote", "Roxo", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1285.00, 10, "Clutch", "Marrom", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1455.00, 10, "Crossbody", "Branco", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1225.00, 10, "Baguette", "Natural", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1645.00, 10, "Shoulder bag", "Bege", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1425.00, 10, "Bucket", "Vermelho", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1265.00, 10, "Tote", "Prata", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1605.00, 10, "Clutch", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1325.00, 10, "Crossbody", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1495.00, 10, "Baguette", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1165.00, 10, "Shoulder bag", "Cinza", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1575.00, 10, "Bucket", "Preto", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1385.00, 10, "Tote", "Roxo", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1295.00, 10, "Clutch", "Marrom", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1465.00, 10, "Crossbody", "Branco", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1235.00, 10, "Baguette", "Natural", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Shoulder bag", 1655.00, 10, "Shoulder bag", "Bege", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Bucket", 1435.00, 10, "Bucket", "Vermelho", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Tote", 1275.00, 10, "Tote", "Prata", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Clutch", 1615.00, 10, "Clutch", "Verde", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Crossbody", 1335.00, 10, "Crossbody", "Azul", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
-# create("Default Baguette", 1505.00, 10, "Baguette", "Rosa", "img-principal-default.png", "img-detalhe1-default.png", "img-detalhe2-default.png", "img-detalhe3-default.png", "img-detalhe4-default.png")
+def popular_banco_por_categoria():
+    session = SessionLocal()
+    
+    cores_lista = ["Preto", "Marrom", "Vermelho", "Azul", "Branco", "Bege", "Verde", "Rosa"]
+    
+    # Criamos os "Kits" focados no FORMATO da bolsa (Categoria)
+    kits_de_imagens = {
+        "Tote": [ 
+            # Imagens focadas em bolsas grandes de ombro
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/2021/23-11/foto-1.png", # Principal
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/2021/23-11/foto-1.png", # Detalhe1
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/2021/23-11/foto-2.png",    # Detalhe2
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/2021/23-11/foto-3.png", # Detalhe3
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/17.20251106144441.png"  # Detalhe4
+        ],
+        "Clutch": [ 
+            # Imagens focadas em bolsas pequenas/de mão
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/2024/25-06/bolsa-feminina-pequena-transversal.jpeg", # Principal
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/2024/25-06/bolsa-feminina-pequena-transversal.jpeg", # Detalhe: Base
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/dua-5775.JPG",    # Detalhe: Fecho
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/dua-5759.JPG", # Ângulo 2
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/24.png"  # Ângulo 3
+        ],
+        "Crossbody": [ 
+            # Imagens focadas em bolsas transversais
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/produtos/bolsas/2020/28-08/link7/screenshot-1.png", # Principal
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/produtos/bolsas/2020/28-08/link7/screenshot-1.png", # Detalhe
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/img-6953.JPG",    # Detalhe
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/20.20251106144442.png", # Ângulo 2
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/img-6951.JPG"  # Ângulo 3
+        ],
+        "Bucket": [ 
+            # Imagens focadas em bolsas estilo saco
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/img-5435.JPG", # Principal
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(transparent):quality(80)/daniella/catalog/19.20251106144442.png", 
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/img-6953.JPG",    
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/jar-9754.JPG", 
+            "https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/daniella/catalog/img-0760.JPG"  
+        ]
+    }
+    
+    # As categorias agora são as chaves do nosso dicionário
+    categorias_disponiveis = list(kits_de_imagens.keys())
+    
+    produtos_para_inserir = []
+    print("Gerando 1000 produtos alinhados perfeitamente por CATEGORIA...")
+    
+    for i in range(1, 1001):
+        # Sorteia uma das 4 categorias que configuramos
+        categoria_escolhida = random.choice(categorias_disponiveis)
+        # Sorteia a cor (texto aleatório)
+        cor_escolhida = random.choice(cores_lista)
+        
+        # Pega a lista de 5 imagens correspondente à categoria sorteada
+        imagens_da_categoria = kits_de_imagens[categoria_escolhida]
+        
+        produto = Produto(
+            nome=f"Bolsa {categoria_escolhida} {cor_escolhida} Luxo {i}",
+            preco=round(random.uniform(250.0, 5500.0), 2),
+            quantidade=random.randint(1, 20),
+            categoria=categoria_escolhida,
+            cor=cor_escolhida,
+            # Distribui as imagens no banco de dados respeitando a categoria:
+            imagem=imagens_da_categoria[0],
+            detalhe_1=imagens_da_categoria[1],
+            detalhe_2=imagens_da_categoria[2],
+            detalhe_3=imagens_da_categoria[3],
+            detalhe_4=imagens_da_categoria[4]
+        )
+        
+        produtos_para_inserir.append(produto)
+    
+    try:
+        session.bulk_save_objects(produtos_para_inserir)
+        session.commit()
+        print("Sucesso! 1000 produtos inseridos com imagens focadas no formato (Categoria).")
+    except Exception as e:
+        session.rollback()
+        print(f"Erro ao inserir: {e}")
+    finally:
+        session.close()
+
+# 1. Rode a função limpar_todos_os_produtos() primeiro
+# 2. Descomente a linha abaixo e rode para inserir os novos
+# popular_banco_por_categoria()
+
+# Certifique-se de que SessionLocal e os modelos (Produto, ItemPedido, etc.) estão importados no topo do arquivo.
+
+def limpar_todos_os_produtos():
+    session = SessionLocal()
+    try:
+        print("Iniciando a limpeza do banco de dados...")
+        
+        # 1. Primeiro, apagamos as relações (para evitar erro de Foreign Key)
+        # Se você não tiver alguma dessas tabelas, pode apagar ou comentar a linha dela
+        session.query(ItemPedido).delete()
+        session.query(Comentario).delete()
+        session.query(Carrinho).delete() 
+        
+        # 2. Agora apagamos todos os produtos
+        produtos_eliminados = session.query(Produto).delete()
+        
+        # 3. Confirmamos a exclusão
+        session.commit()
+        
+        print(f"Faxina concluída! {produtos_eliminados} produtos foram apagados.")
+    except Exception as e:
+        session.rollback()
+        print(f"Ocorreu um erro ao limpar: {e}")
+    finally:
+        session.close()
+
+# Descomente a linha abaixo para executar a limpeza
+# limpar_todos_os_produtos()
+
+
+# ==========================================================
+# FUNÇÃO PARA ZERAR TODOS OS PEDIDOS DO SISTEMA
+# ==========================================================
+
+def zerar_pedidos_e_itens():
+    session = SessionLocal()
+    try:
+        print("Iniciando a limpeza do histórico de pedidos...")
+        
+        # 1. Primeiro apagamos as tabelas filhas (ItemPedido)
+        itens_apagados = session.query(ItemPedido).delete()
+        
+        # 2. Agora que os itens sumiram, podemos apagar a tabela pai (Pedido)
+        pedidos_apagados = session.query(Pedido).delete()
+        
+        # 3. Confirmamos a exclusão no banco de dados
+        session.commit()
+        
+        print(f"Faxina de vendas concluída! {pedidos_apagados} pedidos e {itens_apagados} itens foram apagados do banco.")
+    except Exception as e:
+        # Se der algum erro (ex: banco travado), desfaz tudo para não corromper
+        session.rollback()
+        print(f"Ocorreu um erro ao limpar os pedidos: {e}")
+    finally:
+        # Fecha a conexão para não deixar o banco sobrecarregado
+        session.close()
+
+# Descomente a linha abaixo e rode o arquivo UMA VEZ para limpar o banco. 
+# Depois, comente novamente para não apagar as vendas novas toda vez que reiniciar o servidor!
+
+# zerar_pedidos_e_itens()

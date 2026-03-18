@@ -1,3 +1,207 @@
+/* ==========================================================================
+   1. RESET E CONFIGURAÇÕES GLOBAIS
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  color: #000;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: 0.3s ease;
+}
+
+/* ==========================================================================
+   2. HEADER PREMIUM (Navegação e Ícones)
+   ========================================================================== */
+#header-premium {
+  height: 70px;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0 5%;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.98);
+  z-index: 1000;
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left,
+.header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.header-right {
+  justify-content: flex-end;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+}
+
+.search-item {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.header-container img {
+  width: 20px;
+  height: 20px;
+  transition: opacity 0.3s;
+}
+
+.header-container img:hover {
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   3. MENU DE PERFIL (USUÁRIO LOGADO)
+   ========================================================================== */
+.perfil-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#foto-perfil {
+  cursor: pointer;
+}
+
+.popup-menu {
+  display: none; /* Ativado via JS toggleMenu() */
+  position: absolute;
+  top: calc(100% + 20px);
+  right: 0;
+  background-color: #ffffff;
+  min-width: 200px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f0f0f0;
+  padding: 10px 0;
+  z-index: 1100;
+  animation: fadeInMenu 0.3s ease;
+}
+
+@keyframes fadeInMenu {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-menu a {
+  display: block;
+  padding: 12px 25px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #555;
+  font-weight: 400;
+}
+
+.popup-menu a:hover {
+  background-color: #f9f9f9;
+  color: #000;
+  padding-left: 30px;
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 8px 0;
+}
+
+.logout-link {
+  color: #888 !important;
+}
+
+.logout-link:hover {
+  color: #000 !important;
+}
+
+/* ==========================================================================
+   3. NOVA ESTILIZAÇÃO: HERO BANNER (FUNDO PRETO)
+   ========================================================================== */
+.fundo_preto {
+  width: 100%;
+  height: 400px; /* Altura mais imponente */
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("/static/uploads/pattern_luxury.jpg"), #000; /* Possibilidade de textura */
+  background-size: cover;
+  display: flex;
+  align-items: center; /* Centraliza verticalmente */
+  justify-content: flex-start; /* Alinha à esquerda com respiro */
+  padding: 0 8%;
+  margin-bottom: 20px;
+}
+
+.caixa_fundo_preto {
+  max-width: 600px;
+  animation: fadeInBlur 1.2s ease-out;
+}
+
+.titulo {
+  color: #fff;
+  font-size: 56px;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  margin-bottom: 15px;
+  border-left: 4px solid #fff; /* Detalhe lateral elegante */
+  padding-left: 20px;
+}
+
+.subtitulo {
+  color: #dfdfdf;
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 1px;
+  line-height: 1.8;
+}
+
+@keyframes fadeInBlur {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0);
+  }
+}
+
 /* --------------------- Filtros --------------------------*/
 .categoria {
   display: flex;
@@ -11,7 +215,7 @@
   background: #ffffff;
   padding: 20px 25px 0px 50px;
   width: 400px;
-  min-width: 400px;  /* força a largura mínima */
+  min-width: 400px; /* força a largura mínima */
   max-height: 1000px;
   user-select: none;
   box-sizing: border-box; /* garante que padding não aumente a largura */
@@ -173,153 +377,6 @@
   margin-right: 1px;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  font-family: "Open Sans", sans-serif;
-}
-html,
-body {
-  height: 100%;
-  margin: 0;
-}
-body {
-  display: flex;
-  flex-direction: column;
-}
-main {
-  flex: 1; /* ocupa todo o espaço disponível */
-}
-/* Header */
-#container_header {
-  margin: 0 auto;
-  width: 100%;
-  height: 80px; /* altura fixa do header */
-  padding: 15px;
-  background-color: #000;
-  border-bottom: 1px solid #fff;
-}
-/* links em linha */
-.inline {
-  display: flex;
-  flex-direction: row;
-  gap: 25px;
-} /* bloco da esquerda */
-.left-header {
-  position: absolute;
-  top: 15px;
-  left: 80px; /* você pode mudar esse valor */
-  display: flex;
-  align-items: center;
-  width: auto;
-  gap: 20px;
-}
-.left-header h2 {
-  font-size: 25px;
-  line-height: 1.6;
-  color: white;
-}
-.left-header a {
-  font-size: 17px;
-  text-decoration: none;
-  font-weight: 500;
-  color: white;
-} /* pesquisa */
-#pesquisar {
-  background-color: transparent;
-  border: none;
-  color: white;
-} /* pesquisa */
-#pesquisar:focus {
-  outline: none;
-}
-#pesquisar::placeholder {
-  color: #aaa;
-  transition: color 0.5s ease;
-}
-#pesquisar:focus::placeholder {
-  color: white;
-} /* bloco da direita */
-.right-header {
-  position: absolute;
-  top: 25px;
-  right: 80px; /* você pode mudar esse valor */
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.right-header form input {
-  border: none;
-}
-.right-header a {
-  font-size: 17px;
-  text-decoration: none;
-  font-weight: 500;
-  color: white;
-}
-.icones {
-  width: 25px;
-}
-
-#foto-perfil {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease;
-}
-
-#foto-perfil:hover {
-  box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.5);
-}
-
-.perfil-menu-container {
-  position: relative;
-  display: inline-block;
-}
-
-.popup-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: #fff;
-  min-width: 160px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  z-index: 10;
-  top: 100%;
-  margin-top: 5px;
-}
-
-.popup-menu a {
-  display: block;
-  padding: 10px 15px;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-}
-
-.popup-menu a:hover {
-  background-color: #f1f1f1;
-}
-
-
-/* --------------------- Fundo preto --------------------------*/
-.titulo {
-  color: white;
-  font-size: 50px;
-}
-.subtitulo {
-  color: white;
-  font-size: 20px;
-}
-.fundo_preto {
-  height: 10px;
-  margin-top: -50px;
-  background-color: #000;
-  left: 50px;
-}
 .produtos {
   min-height: auto;
   padding: 40px 0;
@@ -695,9 +752,7 @@ main {
     margin: 18px 100px 10px 25px;
   }
   .subtitulo {
-    font-size: 10px;
-    margin: 10px;
-    margin-left: 25px;
+    display: block;
   }
 
   .footer-newsletter {
@@ -708,11 +763,11 @@ main {
     display: none;
   }
 
-  .footer-column h3{
+  .footer-column h3 {
     font-size: 14px;
   }
 
-  .footer-column a{
+  .footer-column a {
     font-size: 13px;
   }
 

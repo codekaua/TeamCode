@@ -1,203 +1,144 @@
-/* ============ RESET E VARIÁVEIS ============ */
+/* ==========================================================================
+   1. RESET E CONFIGURAÇÕES GLOBAIS
+   ========================================================================== */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --primary: #1a1a1a;
-  --secondary: #000000;
-  --accent: #ffffff;
-  --light: #f5f5f5;
-  --border: #cccccc;
-  --text: #333333;
-  --text-light: #666666;
-  --success: #4caf50;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 body {
-  font-family: "Open Sans", sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #ffffff;
-  color: #000000;
+    background-color: #ffffff;
+    color: #000;
+    overflow-x: hidden;
+    line-height: 1.6;
 }
 
-/* ============ HEADER ============ */
-#container_header {
-  position: relative; /* referência para os filhos */
-  margin: 0 auto;
-  width: 100%;
-  height: 80px; /* altura fixa do header */
-  padding: 15px;
-  background-color: #000;
-  border-bottom: 1px solid #fff;
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: 0.3s ease;
 }
 
-/* links em linha */
-.inline {
-  display: flex;
-  flex-direction: row;
-  gap: 25px;
+/* ==========================================================================
+   2. HEADER PREMIUM (Navegação e Ícones)
+   ========================================================================== */
+#header-premium {
+    height: 70px;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 0 5%;
+    position: sticky;
+    top: 0;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 1000;
+    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* bloco da esquerda */
-.left-header {
-  position: absolute;
-  top: 15px;
-  left: 80px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.header-container {
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.left-header h2 {
-  font-size: 25px;
-  line-height: 1.6;
-  color: white;
-  margin: 0;
+.header-left, .header-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
 
-.left-header a {
-  font-size: 17px;
-  text-decoration: none;
-  font-weight: 500;
-  color: white;
+.header-right {
+    justify-content: flex-end;
 }
 
-/* pesquisa */
-#pesquisar {
-  background-color: transparent;
-  border: none;
-  color: white;
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 5px;
 }
 
-/* bloco da direita */
-.right-header {
-  position: absolute;
-  top: 25px;
-  right: 80px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.search-item {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
 }
 
-.right-header form input {
-  border: none;
+.header-container img {
+    width: 20px;
+    height: 20px;
+    transition: opacity 0.3s;
 }
 
-.right-header a {
-  font-size: 17px;
-  text-decoration: none;
-  font-weight: 500;
-  color: white;
+.header-container img:hover {
+    opacity: 0.6;
 }
 
-.icones {
-  width: 25px;
-}
-
-/* estilização do icone user */
-#foto-perfil {
-  margin-left: 15px;
-  width: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  transition: box-shadow 0.5s ease;
-  cursor: pointer;
-}
-
-#foto-perfil:hover {
-  box-shadow: 0 0 0 5px #ffffff;
-  box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.5);
-}
-
+/* ==========================================================================
+   3. MENU DE PERFIL (USUÁRIO LOGADO)
+   ========================================================================== */
 .perfil-menu-container {
-  position: relative;
-  display: inline-block;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-/* Menu pop-up */
+#foto-perfil {
+    cursor: pointer;
+}
+
 .popup-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: #fff;
-  min-width: 160px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  z-index: 10;
+    display: none; /* Ativado via JS toggleMenu() */
+    position: absolute;
+    top: calc(100% + 20px);
+    right: 0;
+    background-color: #ffffff;
+    min-width: 200px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+    padding: 10px 0;
+    z-index: 1100;
+    animation: fadeInMenu 0.3s ease;
 }
 
-/* Links do menu */
-.popup-menu a {
-  display: block;
-  padding: 10px 15px;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-}
-
-/* Hover nos links */
-.popup-menu a:hover {
-  background-color: #f1f1f1;
-}
-
-.carrinho-icon {
-  position: relative;
-  display: inline-block;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.badge {
-  position: absolute;
-  top: -8px;
-  right: -10px;
-  background: #ff4747;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  font-weight: bold;
-  min-width: 20px;
-  text-align: center;
-}
-
-.btn-login {
-  padding: 8px 18px;
-  background-color: var(--secondary);
-  color: var(--accent);
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.btn-login:hover {
-  background-color: #333333; /* Darker secondary */
-  transform: translateY(-2px);
+@keyframes fadeInMenu {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .popup-menu a {
-  display: block;
-  padding: 12px 16px;
-  text-decoration: none;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border-left: 3px solid transparent;
+    display: block;
+    padding: 12px 25px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #555;
+    font-weight: 400;
 }
 
 .popup-menu a:hover {
-  background-color: var(--light);
-  border-left-color: var(--secondary);
-  padding-left: 20px;
+    background-color: #f9f9f9;
+    color: #000;
+    padding-left: 30px;
+}
+
+.menu-divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 8px 0;
+}
+
+.logout-link {
+    color: #888 !important;
+}
+
+.logout-link:hover {
+    color: #000 !important;
 }
 
 /* ============ PRODUTO SECTION ============ */
