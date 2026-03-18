@@ -6,6 +6,8 @@ from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPExc
 # File = Função para gravar caminho da imagem
 # Depends = Dependência do banco de dados sqlite #pip install python-multipart
 
+from pydantic import BaseModel
+
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 # HTMLResponse = Resposta do html, get, post, put, delete
 # RedirectResponse = Redirecionar a resposta para o front
@@ -25,7 +27,7 @@ from sqlalchemy.orm import Session
 from Model.conexaoDB import get_db, SessionLocal
 # get_db = injeção do SessionLocal na API
 
-from models import Produto, Usuario, ItemPedido, Pedido, Visita, Comentario
+from models import Produto, Usuario, ItemPedido, Pedido, Visita, Comentario, Carrinho
 
 from Model.auth import gerar_hash_senha, verificar_senha, criar_token, verificar_token
 
@@ -53,8 +55,13 @@ def usuario_logado(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/login", status_code=303)
 
     payload = verificar_token(token)
+
+    # Se o token expirou ou é invalido
     if not payload:
-        return RedirectResponse(url="/login", status_code=303)
+        # Redireciona com um parâmetro na URL
+        response = RedirectResponse(url="/login?expirado=true", status_code=303)
+        response.delete_cookie("token") # Limpa o cookie inválido
+        return response
 
     email = payload.get("sub")
     usuario = db.query(Usuario).filter(Usuario.email == email).first()
@@ -126,7 +133,7 @@ def listar(
 
     produtos = query.all()
 
-    return templates.TemplateResponse("loja.html", {
+    return templates.TemplateResponse("loja-user.html", {
         "request": request,
         "usuario": usuario,
         "produtos": produtos,
@@ -339,9 +346,59 @@ async def cadastrar_usuario(
         db.commit()
         db.refresh(novo_usuario)
         return RedirectResponse(url='/login', status_code=303)
+    
+class AtualizarCarrinho(BaseModel):
+    id_produto: int
+    quantidade: int
+
+@router.post("/carrinho/atualizar")
+async def atualizar_quantidade(
+    data: AtualizarCarrinho,
+    request: Request,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(usuario_logado)
+):
+    carrinho = carrinhos.get(usuario.id, [])
+
+    for item in carrinho:
+        if item["id"] == data.id_produto:
+            item["quantidade"] = data.quantidade
+            break
+
+    carrinhos[usuario.id] = carrinho
+
+    return {"status": "ok"}
 
 # carrinho simples em memória
 # adicionar itens ao carrinho
+# formato do dicionário carrinho
+# carrinhos = {
+#     # Chave é o ID do Usuário : Valor é a LISTA de dicionários de produtos
+#     Chave : Valor
+#     1: [
+#         {
+#             "id": 10,           # ID do Produto
+#             "nome": "Smartphone",
+#             "preco": 1800.0,
+#             "quantidade": 1
+#         },
+#         {
+#             "id": 15,
+#             "nome": "Capa Protetora",
+#             "preco": 50.0,
+#             "quantidade": 2
+#         }
+#     ],
+    
+#     2: [
+#         {
+#             "id": 7,
+#             "nome": "Notebook",
+#             "preco": 4500.0,
+#             "quantidade": 1
+#         }
+#     ]
+# }
 carrinhos = {}
 # rotas para carrinho
 
@@ -350,7 +407,8 @@ async def adicionar_carrinho(
     request: Request,
     id_produto: int,
     quantidade: int = Form(1),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(usuario_logado)
 ):
     # para funcionar o usuário tem que estar logado
     token = request.cookies.get("token")
@@ -367,46 +425,41 @@ async def adicionar_carrinho(
     if not produto:
         return RedirectResponse(url="/", status_code=303)
 
+    # pegando o carrinho de determinado usuário
+    # carrinhos.get - o método get está buscando uma chave no dicionário que é o id / usuário logado
+    # o [], retorna lista vazia se o usuário é novo 
+    # a variável carrinho recebe o usuario ... e depois adiciona o produto
     carrinho = carrinhos.get(usuario.id, [])
-    if len(carrinho) >= 1:
-        # se já houver item, redireciona direto para o carrinho
-        return RedirectResponse(url="/carrinho", status_code=303)
 
+    # adicionando ao carrinho do determinado usuário
+    # O carrinho está nesse formato:
+    # carrinho = [{"id": 1, "nome": "fernando", "preco": 1800, "qtd": 3}]
     carrinho.append({
         "id": produto.id,
         "nome": produto.nome,
         "preco": float(produto.preco),
-        "quantidade": quantidade
+        "quantidade": quantidade,
+        "imagem": produto.imagem,
+        "categoria": produto.categoria
     })
     carrinhos[usuario.id] = carrinho  # o id... fez tal pedido
     return RedirectResponse(url="/carrinho", status_code=303)
 
-    # item_existente = db.query(Carrinho).filter(
-    #     Carrinho.id_usuario == usuario.id,
-    #     Carrinho.id_produto == produto.id
-    # ).first()
-
-    # if item_existente:
-    #     item_existente.quantidade += quantidade
-    # else:
-    #     novo_item = Carrinho(id_usuario=usuario.id, id_produto=produto.id, quantidade=quantidade)
-    #     db.add(novo_item)
-
-    # db.commit()
-
 # rota para visualizar o carrinho
-
-
 @router.get("/carrinho", response_class=HTMLResponse)
 async def ver_carrinho(request: Request, db: Session = Depends(get_db)):
     usuario = None
     token = request.cookies.get("token")
+    if not token:
+        return RedirectResponse(url="/login", status_code=303)
 
     if token:
         payload = verificar_token(token)
         if payload:
             email = payload.get("sub")
             usuario = db.query(Usuario).filter(Usuario.email == email).first()
+        else:
+            return RedirectResponse(url="/login", status_code=303)
     carrinho = carrinhos.get(usuario.id, [])
     # itens = db.query(Carrinho).filter(Carrinho.id_usuario == usuario.id).all()
 
@@ -416,6 +469,37 @@ async def ver_carrinho(request: Request, db: Session = Depends(get_db)):
         "usuario": usuario
     })
 
+# Rota para pegar infos do carrinho do usuário
+@router.get("/pagamento", response_class=HTMLResponse)
+async def pagamento(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("token")
+    
+    if not token:
+        return RedirectResponse(url="/login", status_code=303)
+
+    payload = verificar_token(token)
+    if not payload:
+        return RedirectResponse(url="/login", status_code=303)
+
+    email = payload.get("sub")
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+
+    if not usuario:
+        return RedirectResponse(url="/login", status_code=303)
+
+    # Busca o carrinho usando o ID do usuário que acabamos de validar
+    carrinho = carrinhos.get(usuario.id, [])
+
+    # Debug opcional: remova após testar
+    # print(f"Carrinho do usuário {usuario.id}: {carrinho[0]['quantidade']}")
+
+    total_geral = sum(item['quantidade'] * item['preco'] for item in carrinho)
+
+    return templates.TemplateResponse("pagamento.html", {
+        "request": request,
+        "carrinho": carrinho,
+        "total": total_geral
+    })
 
 @router.post("/checkout")
 async def checkout(request: Request, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_logado)):
@@ -423,11 +507,10 @@ async def checkout(request: Request, db: Session = Depends(get_db), usuario: Usu
     carrinho = carrinhos.get(usuario.id, [])
 
     if not carrinho:
-        return {"mensagem": "Carrinho vazio"}
+        return RedirectResponse(url="/carrinho?erro=vazio", status_code=303)
 
     # calcula o total
-    total = round(sum(item["preco"] * item["quantidade"]
-                  for item in carrinho), 2)
+    total = round(sum(item["preco"] * item["quantidade"] for item in carrinho), 2)
 
     # cria o pedido
     pedido = Pedido(id_usuario=usuario.id, total=total)
@@ -469,7 +552,6 @@ def meus_pedidos(request: Request, db: Session = Depends(get_db), usuario: Usuar
     return templates.TemplateResponse("checkout.html",
                                       {"request": request, "pedidos": pedidos, "total_geral": total_geral, "usuario": usuario})
 
-
 @router.get("/api/contador-carrinho")
 def contador_carrinho(db: Session = Depends(get_db), request: Request = None):
     token = request.cookies.get("token")
@@ -478,10 +560,6 @@ def contador_carrinho(db: Session = Depends(get_db), request: Request = None):
         return {"quantidade": 0}
 
     payload = verificar_token(token)
-
-    if not payload:
-        return {"quantidade": 0}
-
     if not payload:
         return {"quantidade": 0}
 
@@ -490,27 +568,42 @@ def contador_carrinho(db: Session = Depends(get_db), request: Request = None):
     if not usuario:
         return {"quantidade": 0}
 
-    # Contar todos os produtos nos pedidos desse usuário
-    pedidos = db.query(Pedido).filter_by(id_usuario=usuario.id).all()
+    # --- LÓGICA CORRIGIDA ---
+    # Pegamos o carrinho atual do usuário no dicionário 'carrinhos'
+    # Se não existir nada, retorna uma lista vazia []
+    carrinho_atual = carrinhos.get(usuario.id, [])
 
-    quantidade_total = 0
-    for pedido in pedidos:
-        itens = db.query(ItemPedido).filter_by(id_pedido=pedido.id).all()
-        quantidade_total += sum(i.quantidade for i in itens)
+    # Somamos a 'quantidade' de cada item que está no carrinho agora
+    quantidade_total = sum(item["quantidade"] for item in carrinho_atual)
 
     return {"quantidade": quantidade_total}
 
 # #rota para deletar o produto do carrinho
+# remove(blabla), carrinho.index(id_produto)
+@router.post("/carrinho/remover/{id_produto}")
+async def remover_carrinho(request: Request, id_produto: int, db: Session = Depends(get_db)):
+    # para funcionar o usuário tem que estar logado
+    token = request.cookies.get("token")
+    if not token:
+        return RedirectResponse(url="/login", status_code=303)
+    payload = verificar_token(token)
+    if not payload:
+        return RedirectResponse(url="/login", status_code=303)
 
+    # caso contrário pega o email dele
+    email_usuario = payload.get("sub")
+    usuario = db.query(Usuario).filter(Usuario.email == email_usuario).first()
+    produto = db.query(Produto).filter(Produto.id == id_produto).first()
 
-@router.post("/carrinho/remover/{id_item}")
-async def remover_carrinho(request: Request, id_item: int, db: Session = Depends(get_db)):
-    item = db.query(Pedido).filter(Pedido.id == id_item).first()
-    if item:
-        db.delete(item)
-        db.commit()
-        return RedirectResponse(url="/produtos", status_code=303)
+    carrinho = carrinhos.get(usuario.id, [])
 
+    # Filtra a lista: mantém apenas o que NÃO for o id_produto que queremos remover
+    carrinho = [item for item in carrinho if item["id"] != id_produto]
+    
+    # Atualiza o dicionário global
+    carrinhos[usuario.id] = carrinho
+    
+    return RedirectResponse(url="/carrinho", status_code=303)
 
 @router.get("/logout")
 def logout():

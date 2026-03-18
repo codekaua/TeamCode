@@ -1,93 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Página do Produto</title>
-    <link rel="stylesheet" href="../../static/Pasta_css/style_produto.css" />
-   <!-- <link
-      rel="stylesheet"
-      href="{{url_for('static', path='Pasta_css/style_produto.css') }}"
-    />  -->
-    <!-- bootstrap -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
+      href="{{url_for('static', path='Pasta_css/style_produto3.css') }}"
     />
-    <!-- FONTE PADRÃO DO SITE -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
 
   <body>
-    <!-- Header - MANTIDO DO ORIGINAL -->
-    <header id="container_header">
-      <div class="inline left-header">
-        <a href="/"><h2>BolsasBR</h2></a>
-        <a href="/produtos">Loja</a>
-        <a href="/sobre">Sobre</a>
-        <form action="">
-          <label for="pesquisar"
-            ><img
-              class="icones"
-              src="/static/uploads/icons_header/lupa.png"
-              alt=""
-          /></label>
-          <input type="text" id="pesquisar" placeholder="Pesquisar" />
-        </form>
-      </div>
-      <div class="inline right-header">
-        {% if usuario %}
-        <a href=""
-          ><img src="/static/uploads/icons_header/coracao.png" alt=""
-        /></a>
-        <a href="/meus-pedidos" class="carrinho-icon">
-          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-          <span id="contador-carrinho" class="badge">0</span>
-        </a>
-        <div class="perfil-menu-container">
-          <img
-            id="foto-perfil"
-            src="/static/uploads/icons_header/img-perfil.png"
-            alt="imagem de perfil"
-            onclick="toggleMenu()"
-          />
-
-          <div id="menu-perfil" class="popup-menu">
-            <a href="/me/dados">Meus Dados</a>
-            <a href="/me/pedidos">Meus Pedidos</a>
-            <a href="/logout">Sair</a>
+    <header id="header-premium">
+      <div class="header-container">
+        <div class="header-left">
+          <div class="search-item">
+            <img src="/static/uploads/img_header/buscar.svg" alt="Buscar" />
+            <span>BUSCAR</span>
           </div>
         </div>
 
-        <script>
-          function toggleMenu() {
-            const menu = document.getElementById("menu-perfil");
-            menu.style.display =
-              menu.style.display === "block" ? "none" : "block";
-          }
+        <div class="header-center">
+          <a href="/" class="logo">BolsasBR</a>
+        </div>
 
-          // Fecha o menu se clicar fora
-          window.onclick = function (event) {
-            const menu = document.getElementById("menu-perfil");
-            const foto = document.getElementById("foto-perfil");
-            if (!foto.contains(event.target) && !menu.contains(event.target)) {
-              menu.style.display = "none";
-            }
-          };
-        </script>
-        {% else %}
-        <a href=""
-          ><img src="/static/uploads/icons_header/coracao.png" alt=""
-        /></a>
-        <a href="/meus-pedidos" class="carrinho-icon">
-          <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-          <span id="contador-carrinho" class="badge">0</span>
-        </a>
-        <a href="/login">Login</a>
-        {% endif %}
+        <div class="header-right">
+          <a href="/sobre"
+            ><img
+              src="/static/uploads/img_header/sobre_nos.svg"
+              alt="Favoritos"
+          /></a>
+          <a href="/carrinho"
+            ><img src="/static/uploads/img_header/carrinho.svg" alt="Carrinho"
+          /></a>
+          {% if not usuario %}
+          <a href="/login"
+            ><img src="/static/uploads/img_header/user.svg" alt="Usuário"
+          /></a>
+          {% else %}
+          <div class="perfil-menu-container">
+            <img
+              id="foto-perfil"
+              src="/static/uploads/img_header/user.svg"
+              alt="Usuário"
+              onclick="toggleMenu()"
+            />
+
+            <div id="menu-perfil" class="popup-menu">
+              <a href="/me/dados">Meus Dados</a>
+              <a href="/me/pedidos">Meus Pedidos</a>
+              <a href="/logout">Sair</a>
+            </div>
+          </div>
+          <script src="{{url_for('static', path='js/animação_user.js') }}"></script>
+          {% endif %}
+        </div>
       </div>
     </header>
 
@@ -98,22 +65,10 @@
           <!-- Galeria de imagens - MELHORADA -->
           <div class="produto-imagens">
             <div class="grid-imagens">
-              <img
-                src="/static/uploads/bolsas/{{produto.detalhe_1}}"
-                alt="detal1"
-              />
-              <img
-                src="/static/uploads/bolsas/{{produto.detalhe_2}}"
-                alt="detal2"
-              />
-              <img
-                src="/static/uploads/bolsas/{{produto.detalhe_3}}"
-                alt="detal3"
-              />
-              <img
-                src="/static/uploads/bolsas/{{produto.detalhe_4}}"
-                alt="detal4"
-              />
+              <img src="{{produto.detalhe_1}}" alt="detal1" />
+              <img src="{{produto.detalhe_2}}" alt="detal2" />
+              <img src="{{produto.detalhe_3}}" alt="detal3" />
+              <img src="{{produto.detalhe_4}}" alt="detal4" />
             </div>
           </div>
 
@@ -127,49 +82,17 @@
               <p class="parcelamento">ou 4x de R$ 6.725 sem juros</p>
             </div>
 
-            <!-- Cores - MELHORADA -->
-            <div class="produto-cores">
-              <label>Cor:</label>
-              <div class="cores-group">
-                <span class="cor" style="background-color: #d28c5c"></span>
-                <span class="cor" style="background-color: #000"></span>
-              </div>
-            </div>
-
-            <!-- Quantidade - MELHORADA -->
-            <div class="produto-quantidade">
-              <label>Quantidade:</label>
-              <div class="quantidade-controle">
-                <button type="button" class="qty-btn" id="diminuir">−</button>
-                <input
-                  type="text"
-                  id="quantidade"
-                  name="quantidade"
-                  value="1"
-                  readonly
-                />
-                <button type="button" class="qty-btn" id="aumentar">+</button>
-              </div>
-            </div>
-
             <!-- Botão de compra - MELHORADO -->
-            
+
             <form
               id="form-carrinho"
               action="/carrinho/adicionar/{{produto.id}}"
               method="post"
             >
-              <input
-                type="hidden"
-                name="quantidade"
-                id="quantidade-hidden"
-                value="1"
-              />
               <button type="submit" class="btn-comprar">
                 Adicionar ao carrinho
               </button>
             </form>
-            
 
             <!-- Links extras - MELHORADA -->
             <div class="produto-links">

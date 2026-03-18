@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
@@ -45,6 +45,26 @@
     </div>
 
     <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Verifica se existe o parâmetro de expiração na URL
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.get("expirado") === "true") {
+          // Usa sua própria função de estilo para avisar o usuário
+          mostrarMensagem(
+            "Sua sessão expirou. Por favor, faça login novamente.",
+            "erro",
+          );
+
+          // Limpa a URL para o aviso não aparecer novamente no Refresh (F5)
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname,
+          );
+        }
+      });
+
       const form = document.querySelector("form");
       const mensagemDiv = document.getElementById("mensagem");
 

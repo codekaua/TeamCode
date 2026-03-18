@@ -1,71 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <link rel="stylesheet" href="style_home.css" /> -->
-    <link rel="icon" href="/static/uploads/bolsa-de-mulher.png" />
+    <title>BolsasBR - Luxury Collection</title>
     <link
       rel="stylesheet"
-      href="{{url_for('static', path='Pasta_css/style_home2.css') }}"
+      href="{{url_for('static', path='Pasta_css/style_home4.css') }}"
     />
-    <!-- bootstrap -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
-    />
-
-    <!-- FONTE PADRÃO DO SITE -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-      rel="stylesheet"
-    />
-    <title>Home - LaVeraBags</title>
   </head>
 
   <body>
-    <div id="intro">
-      <video id="introVideo" autoplay muted disablePictureInPicture>
-        <source src="/static/uploads/intro.mp4" type="video/mp4" />
-        Seu navegador não suporta vídeo.
-      </video>
-    </div>
-
-    <!-- Header -->
-    <main id="container_main">
-      <header id="container_header">
-        <div class="inline left-header">
-          <a href="/"><h2>BolsasBR</h2></a>
-          <a href="/produtos">Loja</a>
-          <a href="/sobre">Sobre</a>
-          <form action="">
-            <label for="pesquisar"
-              ><img
-                class="icones"
-                src="/static/uploads/icons_header/lupa.png"
-                alt=""
-            /></label>
-            <input type="text" id="pesquisar" placeholder="Pesquisar" />
-          </form>
+    <header id="header-premium">
+      <div class="header-container">
+        <div class="header-left">
+          <div class="search-item">
+            <img src="/static/uploads/img_header/buscar.svg" alt="Buscar" />
+            <span>BUSCAR</span>
+          </div>
         </div>
-        <div class="inline right-header">
-          {% if usuario %}
-          <a href=""
-            ><img src="/static/uploads/icons_header/coracao.png" alt=""
+
+        <div class="header-center">
+          <a href="/" class="logo">BolsasBR</a>
+        </div>
+
+        <div class="header-right">
+          <a href="/sobre"
+            ><img
+              src="/static/uploads/img_header/sobre_nos.svg"
+              alt="Favoritos"
           /></a>
-          <a href="/meus-pedidos" class="carrinho-icon">
-            <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-            <span id="contador-carrinho" class="badge">0</span>
-          </a>
+          <a href="/carrinho"
+            ><img src="/static/uploads/img_header/carrinho.svg" alt="Carrinho"
+          /></a>
+          {% if not usuario %}
+          <a href="/login"
+            ><img src="/static/uploads/img_header/user.svg" alt="Usuário"
+          /></a>
+          {% else %}
           <div class="perfil-menu-container">
             <img
               id="foto-perfil"
-              src="/static/uploads/icons_header/img-perfil.png"
-              alt="imagem de perfil"
+              src="/static/uploads/img_header/user.svg"
+              alt="Usuário"
               onclick="toggleMenu()"
             />
 
@@ -75,192 +52,226 @@
               <a href="/logout">Sair</a>
             </div>
           </div>
-
-          <script>
-            function toggleMenu() {
-              const menu = document.getElementById("menu-perfil");
-              menu.style.display =
-                menu.style.display === "block" ? "none" : "block";
-            }
-
-            // Fecha o menu se clicar fora
-            window.onclick = function (event) {
-              const menu = document.getElementById("menu-perfil");
-              const foto = document.getElementById("foto-perfil");
-              if (
-                !foto.contains(event.target) &&
-                !menu.contains(event.target)
-              ) {
-                menu.style.display = "none";
-              }
-            };
-          </script>
-          {% else %}
-          <a href=""
-            ><img src="/static/uploads/icons_header/coracao.png" alt=""
-          /></a>
-          <a href="/meus-pedidos" class="carrinho-icon">
-            <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-            <span id="contador-carrinho" class="badge">0</span>
-          </a>
-          <a href="/login">Login</a>
+          <script src="{{url_for('static', path='js/animação_user.js') }}"></script>
           {% endif %}
         </div>
-      </header>
+      </div>
+    </header>
 
-      <!----------------------- Topo -------------------------->
-      <section id="Topo">
-        <div class="container_topo">
-          <div class="txt_topo">
-            <h2>Bolsas que carregam muito mais<br />que estilo.</h2>
-            <p>
-              Elegância não está nos detalhes, mas no que você leva<br />consigo.
-            </p>
-            <a href="/produtos" class="botao">Ver Mais</a>
-          </div>
-          <div class="img_topo">
-            <h2>Mais que um acessório</h2>
-          </div>
+    <main>
+      <section class="hero-image">
+        <img src="static/uploads/malas_bolsas.webp" alt="Destaque" />
+      </section>
+
+      <section class="brand-intro">
+        <div class="intro-content">
+          <p class="intro-subtitle">ESSENCIAIS DA ESTAÇÃO</p>
+          <h2 class="intro-title">Onde a tradição encontra o novo luxo</h2>
+          <p class="intro-description">
+            Descubra uma curadoria exclusiva de bolsas feitas à mão, desenhadas
+            para a mulher que não abre mão da sofisticação.
+          </p>
+          <a href="/produtos" class="btn-discovery">DESCUBRA A COLEÇÃO</a>
         </div>
       </section>
 
-      <!-- Meio -->
-      <section id="Meio">
-        <div class="container_meio">
-          <div class="txt_meio">
-            <h2>Nossas últimas novidades</h2>
-            <p>
-              Longe de ser apenas um objeto, a bolsa guarda segredos,
-              <br />sustenta histórias e acompanha cada passo da elegância
-              contemporânea.
-            </p>
-            <a href="/produtos" class="botao">Comprar</a>
+      <section class="carousel-section">
+        <div class="carousel-container">
+          <button class="nav-btn prev" id="prevBtn">❮</button>
+
+          <div class="carousel-track-wrapper">
+            <div class="carousel-track" id="track">
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img1.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>BOLSA ELEGANCE</h3>
+                  <p>R$ 1.500,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img2.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>CLUTCH MONOGRAM</h3>
+                  <p>R$ 980,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img3.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>TOTE PRESTIGE</h3>
+                  <p>R$ 2.100,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img4.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>MINI LUXURY</h3>
+                  <p>R$ 750,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img1.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>MINI LUXURY</h3>
+                  <p>R$ 750,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img2.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>MINI LUXURY</h3>
+                  <p>R$ 750,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img3.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>MINI LUXURY</h3>
+                  <p>R$ 750,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img4.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>MINI LUXURY</h3>
+                  <p>R$ 750,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img1.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>MINI LUXURY</h3>
+                  <p>R$ 750,00</p>
+                </div>
+              </div>
+              <div class="product-card">
+                <div class="img-box">
+                  <img
+                    src="/static/uploads/img_header/img2.webp"
+                    alt="Produto"
+                  />
+                </div>
+                <div class="product-info">
+                  <h3>MINI LUXURY</h3>
+                  <p>R$ 750,00</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="img_meio">
-            <div class="imagens_meio img_meio1">
-              <img
-                src="/static/uploads/img_meio/img1.jpg"
-                class="opacidade"
-                alt=""
-              />
-            </div>
-            <div class="imagens_meio img_meio2">
-              <img
-                src="/static/uploads/img_meio/meio2.webp"
-                class="opacidade"
-                alt=""
-              />
-            </div>
-            <div class="imagens_meio img_meio3">
-              <img
-                src="/static/uploads/img_meio/meio3.webp"
-                class="opacidade"
-                alt=""
-              />
-            </div>
-          </div>
+
+          <button class="nav-btn next" id="nextBtn">❯</button>
         </div>
       </section>
 
-      <section class="bolsa-section">
-        <div class="container">
-          <!-- Coluna Esquerda: Modelo com bolsa -->
-          <div class="coluna-esquerda">
-            <img
-              src="/static/uploads/img_baixo/Pricipal_baixo.jpg"
-              alt="Modelo com bolsa"
-            />
-          </div>
-
-          <!-- Coluna Direita: Bolsas individuais -->
-          <div class="coluna-direita">
-            <div class="bolsa-item bolsa_1">
-              <img src="/static/uploads/img_baixo/bolsa_1.avif" alt="Bolsa 1" />
-            </div>
-            <div class="bolsa-item">
-              <img src="/static/uploads/img_baixo/bolsa_2.avif" alt="Bolsa 2" />
-            </div>
-            <div class="bolsa-item bolsa_3">
-              <img src="/static/uploads/img_baixo/bolsa_3.avif" alt="Bolsa 3" />
-            </div>
-            <div class="bolsa-item bolsa_4">
-              <img src="/static/uploads/img_baixo/bolsa_4.avif" alt="Bolsa 4" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Botão -->
-        <div class="ver-mais">
-          <a href="/produtos" class="botao">Ver Mais</a>
+      <section class="brand-intro">
+        <div class="intro-content">
+          <p class="intro-subtitle">ESSENCIAIS DA ESTAÇÃO</p>
+          <h2 class="intro-title">Nossos produtos mais vendidos</h2>
+          <p class="intro-description">
+            Uma fusão entre o saber-fazer artesanal e a estética urbana. Criamos
+            peças que não são apenas acessórios, mas extensões da sua identidade
+            e história.
+          </p>
+          <a href="/produtos" class="btn-discovery">Veja Mais</a>
         </div>
       </section>
-
-      <!-- Footer -->
-      <footer class="footer-newsletter">
-        <div class="footer-container">
-          <!-- Newsletter -->
-          <div class="newsletter-section">
-            <h2>Inscreva-se na nossa newsletter</h2>
-            <p>
-              Seja o primeiro a saber sobre nossas ofertas especiais,<br />lançamentos
-              de novos produtos e eventos
-            </p>
-            <form class="newsletter-form">
-              <input type="email" placeholder="Adicionar Email" required />
-              <button type="submit">Inscrever-se</button>
-            </form>
-          </div>
-
-          <!-- Links -->
-          <div class="footer-links">
-            <div class="footer-column">
-              <h3>Comprar</h3>
-              <a href="#">Mulheres</a>
-              <a href="#">Cartões-presente</a>
-              <a href="#">Oferta</a>
-            </div>
-            <div class="footer-column">
-              <h3>Ajuda</h3>
-              <a href="#">Central de Ajuda</a>
-              <a href="#">Status do pedido</a>
-              <a href="#">Tabela de tamanhos</a>
-              <a href="#">Devoluções e Garantia</a>
-              <a href="#">Contate-nos</a>
-            </div>
-            <div class="footer-column">
-              <h3>Sobre</h3>
-              <a href="#">Sobre nós</a>
-              <a href="#">Responsabilidade</a>
-              <a href="#">Tecnologia e Inovação</a>
-              <a href="#">Explore nossas histórias</a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </main>
-    <script>
-      // Pega os elementos do DOM
-      const intro = document.getElementById("intro"); // div que contém o vídeo
-      const main = document.getElementById("container_main"); // conteúdo principal
-      const video = document.getElementById("introVideo"); // elemento <video>
 
-      // Checa se a intro já foi mostrada nesta aba (sessionStorage dura apenas a aba)
-      if (sessionStorage.getItem("introPlayed")) {
-        // Se já foi mostrada, esconde a intro e mostra o site direto
-        intro.style.display = "none";
-        main.style.display = "block";
-      } else {
-        // Se é a primeira vez, espera o vídeo terminar
-        video.addEventListener("ended", () => {
-          intro.style.display = "none"; // esconde a intro
-          main.style.display = "block"; // mostra o site
-          sessionStorage.setItem("introPlayed", "true"); // marca que já foi mostrado nesta sessão
-        });
+    <footer class="main-footer">
+      <div class="footer-container">
+        <div class="footer-column newsletter">
+          <h3>NEWSLETTER</h3>
+          <p>
+            Inscreva-se para receber atualizações sobre coleções e eventos
+            exclusivos.
+          </p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Endereço de e-mail" />
+            <button type="submit">OK</button>
+          </form>
+        </div>
 
-        // Garante que o site fique oculto até o vídeo terminar, mesmo se o vídeo demorar para carregar
-        main.style.display = "none";
-      }
-    </script>
-    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
+        <div class="footer-column">
+          <h3>AJUDA</h3>
+          <ul>
+            <li><a href="#">Fale Conosco</a></li>
+            <li><a href="#">Envios e Devoluções</a></li>
+            <li><a href="#">Perguntas Frequentes</a></li>
+            <li><a href="#">Cuidados com o Produto</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>A EMPRESA</h3>
+          <ul>
+            <li><a href="/sobre">Sobre a BolsasBR</a></li>
+            <li><a href="#">Sustentabilidade</a></li>
+            <li><a href="#">Trabalhe Conosco</a></li>
+            <li><a href="#">Termos e Condições</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>SIGA-NOS</h3>
+          <div class="social-links">
+            <a href="#">Instagram</a>
+            <a href="#">Pinterest</a>
+            <a href="#">Facebook</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <h2 class="footer-logo">BolsasBR</h2>
+        <p>&copy; 2024 BolsasBR. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+
+    <script src="{{url_for('static', path='js/carrosel_home.js') }}"></script>
   </body>
 </html>

@@ -1,0 +1,406 @@
+/* ==========================================================================
+   1. RESET E CONFIGURAÇÕES GLOBAIS
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  color: #000;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: 0.3s ease;
+}
+
+/* ==========================================================================
+   2. HEADER PREMIUM (Navegação e Ícones)
+   ========================================================================== */
+#header-premium {
+  height: 70px;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0 5%;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.98);
+  z-index: 1000;
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left,
+.header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.header-right {
+  justify-content: flex-end;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+}
+
+.search-item {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.header-container img {
+  width: 20px;
+  height: 20px;
+  transition: opacity 0.3s;
+}
+
+.header-container img:hover {
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   3. MENU DE PERFIL (USUÁRIO LOGADO)
+   ========================================================================== */
+.perfil-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#foto-perfil {
+  cursor: pointer;
+}
+
+.popup-menu {
+  display: none; /* Ativado via JS toggleMenu() */
+  position: absolute;
+  top: calc(100% + 20px);
+  right: 0;
+  background-color: #ffffff;
+  min-width: 200px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f0f0f0;
+  padding: 10px 0;
+  z-index: 1100;
+  animation: fadeInMenu 0.3s ease;
+}
+
+@keyframes fadeInMenu {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-menu a {
+  display: block;
+  padding: 12px 25px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #555;
+  font-weight: 400;
+}
+
+.popup-menu a:hover {
+  background-color: #f9f9f9;
+  color: #000;
+  padding-left: 30px;
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 8px 0;
+}
+
+.logout-link {
+  color: #888 !important;
+}
+
+.logout-link:hover {
+  color: #000 !important;
+}
+
+/* ==========================================================================
+   4. SEÇÕES DE CONTEÚDO (HERO & INTRO)
+   ========================================================================== */
+.hero-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.brand-intro {
+  padding: 100px 10%;
+  text-align: center;
+}
+
+.intro-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.intro-subtitle {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #888;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.intro-title {
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+}
+
+.intro-description {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #555;
+  font-weight: 300;
+  margin-bottom: 40px;
+  font-style: italic;
+}
+
+.btn-discovery {
+  display: inline-block;
+  padding: 15px 45px;
+  border: 1px solid #000;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.btn-discovery:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+/* ==========================================================================
+   5. CARROSSEL DE PRODUTOS
+   ========================================================================== */
+.carousel-section {
+  padding: 40px 5% 80px;
+}
+
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.carousel-track-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 15px;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.product-card {
+  min-width: calc(25% - 12px);
+  text-align: center;
+}
+
+.img-box {
+  aspect-ratio: 1/1;
+  background-color: #f6f6f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.img-box img {
+  width: 80%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .img-box img {
+  transform: scale(1.08);
+}
+
+.product-info h3 {
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 400;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.product-info p {
+  font-size: 12px;
+  color: #666;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 15px;
+  z-index: 10;
+  transition: opacity 0.3s;
+}
+
+.nav-btn:hover {
+  opacity: 0.3;
+}
+
+/* ==========================================================================
+   6. FOOTER (PRETO ABSOLUTO)
+   ========================================================================== */
+.main-footer {
+  background-color: #000;
+  color: #fff;
+  padding: 80px 5% 40px;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 60px;
+}
+
+.footer-column h3 {
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+.footer-column p,
+.footer-column li {
+  font-size: 13px;
+  font-weight: 300;
+  color: #999;
+  line-height: 2;
+}
+
+.footer-column ul {
+  list-style: none;
+}
+
+.footer-column a:hover {
+  color: #fff;
+}
+
+.newsletter-form {
+  margin-top: 20px;
+  display: flex;
+  border-bottom: 1px solid #555;
+  padding-bottom: 5px;
+}
+
+.newsletter-form input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  width: 100%;
+  outline: none;
+}
+
+.newsletter-form button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 50px;
+}
+
+.footer-logo {
+  font-size: 22px;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.footer-bottom p {
+  font-size: 10px;
+  color: #555;
+  letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   8. MEDIA QUERIES (RESPONSIVIDADE)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .product-card {
+    min-width: calc(50% - 10px);
+  }
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-left span {
+    display: none;
+  } /* Esconde o texto "BUSCAR" no mobile */
+  .intro-title {
+    font-size: 24px;
+  }
+  .editorial-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .brand-intro {
+    padding: 60px 5%;
+  }
+}
+
+@media (max-width: 600px) {
+  .product-card {
+    min-width: 85%;
+  }
+  .footer-container {
+    grid-template-columns: 1fr;
+  }
+  .logo {
+    font-size: 18px;
+    letter-spacing: 3px;
+  }
+}
