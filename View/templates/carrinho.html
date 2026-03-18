@@ -4,26 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Carrinho de Compras</title>
-<<<<<<< HEAD
     <link
       rel="stylesheet"
       href="{{url_for('static', path='Pasta_css/style_carrinho5.css') }}"
-=======
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{{url_for('static', path='Pasta_css/style_carrinho3.css') }}"
->>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
     />
   </head>
 
   <body>
-<<<<<<< HEAD
     <header id="header-premium">
       <div class="header-container">
         <div class="header-left">
@@ -77,14 +64,6 @@
         <p class="page-subtitle">Revise seus itens selecionados</p>
       </div>
 
-=======
-    <main class="container">
-      <div class="section-header">
-        <h1 class="page-title">Seu Carrinho</h1>
-        <p class="page-subtitle">Revise seus itens selecionados</p>
-      </div>
-
->>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
       <div class="main-content">
         <div class="cart-section">
           {% for i in carrinho %}
@@ -101,14 +80,7 @@
               </div>
 
               <div class="item-image">
-<<<<<<< HEAD
                 <img src="{{ i.imagem }}" alt="{{i.nome}}" />
-=======
-                <img
-                  src="/static/uploads/bolsas/{{ i.imagem }}"
-                  alt="{{i.nome}}"
-                />
->>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
               </div>
 
               <div class="item-details">
@@ -298,7 +270,6 @@
         if (newValue < 1) return;
 
         input.value = newValue;
-<<<<<<< HEAD
 
         await fetch("/carrinho/atualizar", {
           method: "POST",
@@ -312,21 +283,6 @@
         });
 
         updateSummary();
-=======
-
-        await fetch("/carrinho/atualizar", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id_produto: itemId,
-            quantidade: newValue,
-          }),
-        });
-
-        updateSummary()
->>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
       }
 
       // Remove item

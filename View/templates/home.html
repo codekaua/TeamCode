@@ -30,7 +30,6 @@
               src="/static/uploads/img_header/sobre_nos.svg"
               alt="Favoritos"
           /></a>
-<<<<<<< HEAD
           <a href="/carrinho"
             ><img src="/static/uploads/img_header/carrinho.svg" alt="Carrinho"
           /></a>
@@ -39,12 +38,6 @@
             ><img src="/static/uploads/img_header/user.svg" alt="Usuário"
           /></a>
           {% else %}
-=======
-          <a href="/carrinho" class="carrinho-icon">
-            <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-            <span id="contador-carrinho" class="badge">0</span>
-          </a>
->>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
           <div class="perfil-menu-container">
             <img
               id="foto-perfil"
@@ -59,39 +52,7 @@
               <a href="/logout">Sair</a>
             </div>
           </div>
-<<<<<<< HEAD
           <script src="{{url_for('static', path='js/animação_user.js') }}"></script>
-=======
-
-          <script>
-            function toggleMenu() {
-              const menu = document.getElementById("menu-perfil");
-              menu.style.display =
-                menu.style.display === "block" ? "none" : "block";
-            }
-
-            // Fecha o menu se clicar fora
-            window.onclick = function (event) {
-              const menu = document.getElementById("menu-perfil");
-              const foto = document.getElementById("foto-perfil");
-              if (
-                !foto.contains(event.target) &&
-                !menu.contains(event.target)
-              ) {
-                menu.style.display = "none";
-              }
-            };
-          </script>
-          {% else %}
-          <a href=""
-            ><img src="/static/uploads/icons_header/coracao.png" alt=""
-          /></a>
-          <a href="/carrinho" class="carrinho-icon">
-            <img src="/static/uploads/icons_header/icon_carrinho.png" alt="" />
-            <span id="contador-carrinho" class="badge">0</span>
-          </a>
-          <a href="/login">Login</a>
->>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
           {% endif %}
         </div>
       </div>

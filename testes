@@ -1,7 +1,0 @@
-frutas = ['maçã', 'banana', 'uva']
-for indice, fruta in enumerate(frutas):
-    print(f"{indice}: {fruta}")
-# Saída:
-# 0: maçã
-# 1: banana
-# 2: uva
