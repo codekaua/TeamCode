@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-br">
+<<<<<<< HEAD
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -153,6 +154,106 @@
             <span>R$ {{i.preco}}</span>
           </div>
           <div class="divider"></div>
+=======
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout | Dark & White Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{{url_for('static', path='Pasta_css/style_pagamento2.css') }}" />
+</head>
+
+<body>
+  <div class="container">
+    <main>
+      <div class="section-box">
+        <h2>01. Identificação</h2>
+        <div class="form-group">
+          <label>E-mail para contato</label>
+          <input type="email" placeholder="email@exemplo.com" />
+        </div>
+        <div class="form-group">
+          <label>Nome Completo</label>
+          <input type="text" placeholder="Digite seu nome" />
+        </div>
+      </div>
+
+      <div class="section-box">
+        <h2>02. Entrega</h2>
+        <div class="grid-row">
+          <div class="form-group">
+            <label>CEP</label>
+            <input type="text" id="cep" placeholder="00000-000" onblur="buscarCep()" />
+          </div>
+          <div class="form-group">
+            <label>Número</label>
+            <input type="text" placeholder="123" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Endereço</label>
+          <input type="text" id="rua" placeholder="Rua / Avenida" />
+        </div>
+        <div class="grid-row">
+          <div class="form-group">
+            <label>Bairro</label>
+            <input type="text" id="bairro" />
+          </div>
+          <div class="form-group">
+            <label>Cidade</label>
+            <input type="text" id="cidade" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <h2>03. Pagamento</h2>
+        <div class="payment-options">
+          <div class="option active" onclick="selectPayment(this, 'card')">
+            CARTÃO
+          </div>
+          <div class="option" onclick="selectPayment(this, 'pix')">PIX</div>
+          <div class="option" onclick="selectPayment(this, 'boleto')">
+            BOLETO
+          </div>
+        </div>
+
+        <div id="card-form">
+          <div class="form-group">
+            <label>Número do Cartão</label>
+            <input type="text" placeholder="0000 0000 0000 0000" />
+          </div>
+          <div class="grid-row">
+            <div class="form-group">
+              <label>Validade</label>
+              <input type="text" placeholder="MM/AA" />
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input type="text" placeholder="123" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside>
+      <div class="order-summary">
+        <h3>Seu Pedido</h3>
+
+        {% if carrinho %}
+          {% for i in carrinho %}
+            <div class="cart-item">
+              <div class="item-info">
+                <b>{{i.nome}}</b>
+                <span>Quantidade: {{i.quantidade}}</span>
+              </div>
+              <span>R$ {{i.preco}}</span>
+            </div>
+            <div class="divider"></div>
+>>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
           {% endfor %}
 
           <div class="row-flex">
@@ -168,6 +269,7 @@
             <span>TOTAL</span>
             <span>R$ {{total + 15}}</span>
           </div>
+<<<<<<< HEAD
 
           <form action="/checkout" method="post" onsubmit="enviarQuantidades()">
             <button class="btn-main">Finalizar Pedido</button>
@@ -194,3 +296,23 @@
     <script src="{{ url_for('static', path='js/pagamento.js') }}"></script>
   </body>
 </html>
+=======
+        
+          <form action="/checkout" method="post" onsubmit="enviarQuantidades()">
+            <button class="btn-main">Finalizar Pedido</button>
+          </form>
+        {% else %}
+          <div style="text-align: center; padding: 20px;">
+            <p>Seu carrinho está vazio.</p>
+            <a href="/produtos" class="btn-main" style="text-decoration: none; display: inline-block; margin-top: 10px;">Voltar à Loja</a>
+          </div>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+
+  <script src="{{ url_for('static', path='js/pagamento.js') }}"></script>
+</body>
+
+</html>
+>>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336

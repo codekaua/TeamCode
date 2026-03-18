@@ -78,6 +78,26 @@ class Comentario(Base):
     rating = Column(Integer, nullable=False)
     usuario = Column(String(100), nullable=False)
 
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
 # CRUD PARA PRODUTOS
 # CREATE
 def create(nome:str, preco:float, quantidade:int, categoria:str, cor:str, imagem:str, detalhe1:str, detalhe2:str, detalhe3:str, detalhe4:str):
