@@ -5,6 +5,7 @@ from Model.conexaoDB import SessionLocal, Base, engine
 from Model.auth import gerar_hash_senha
 import random
 from Model.conexaoDB import SessionLocal
+from datetime import datetime
 
 # ORM de produto
 class Produto(Base):
@@ -40,6 +41,11 @@ class Pedido(Base):
     id = Column("id", Integer, primary_key=True, index=True)
     id_usuario = Column("id_usuario", Integer, ForeignKey("usuarios.id")) # id do usuário que está fazendo o pedido
     total = Column("total", Float, default=0.0) # total de pedidos
+
+    # --- NOVAS COLUNAS PARA O SISTEMA DE FRETE ---
+    data_pedido = Column("data_pedido", DateTime, default=datetime.now) # Grava a hora exata da compra
+    prazo_entrega = Column("prazo_entrega", Integer, default=15) # Os dias de frete
+    status = Column("status", String(50), default="Em trânsito") # O status para controlarmos
 
     usuario = relationship("Usuario", back_populates="pedidos")
     itens = relationship("ItemPedido", back_populates="pedido")

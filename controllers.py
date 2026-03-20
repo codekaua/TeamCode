@@ -300,6 +300,9 @@ async def detalhe(request: Request, id_produto: int, db: Session = Depends(get_d
     # Busca especificamente o produto clicado pelo ID (Primary Key)
     produto = db.query(Produto).filter(Produto.id == id_produto).first()
 
+    if produto.quantidade == 0:
+        return RedirectResponse(url=f"/carrinho?erro=estoque_insuficiente&id={produto.id}", status_code=303)
+
     # Variável auxiliar vazia enviada para o front-end evitar erros no Jinja2
     carrinho = []
 
@@ -344,7 +347,10 @@ def meus_pedidos(request: Request, db: Session = Depends(get_db), usuario: Usuar
         total_geral = sum(p.total for p in pedidos)
 
     return templates.TemplateResponse("checkout.html",
-                                      {"request": request, "pedidos": pedidos, "total_geral": total_geral, "usuario": usuario})
+                                      {"request": request, 
+                                       "pedidos": pedidos,
+                                        "total_geral": total_geral,
+                                        "usuario": usuario})
 
 
 # ==========================================================
@@ -445,6 +451,16 @@ async def pagamento(request: Request, db: Session = Depends(get_db), usuario: Us
     # Busca o carrinho usando o ID do usuário validado
     carrinho = carrinhos.get(usuario.id, [])
 
+    for item in carrinho:
+        # puxa o produto no banco de dados pelo id
+        produto_banco = db.query(Produto).filter(Produto.id == item['id']).first()
+
+        # verifica se tem produto no banco de dados 
+        # e se a quantidade do carrinho é maior do que tem no banco de dados    
+        if not produto_banco or item['quantidade'] > produto_banco.quantidade:
+            # Se deu ruim, manda o cliente de volta pro carrinho com um aviso na URL!
+            return RedirectResponse(url=f"/carrinho?erro=estoque_insuficiente&id={item['id']}", status_code=303)
+
     # Faz o cálculo de subtotal: (Quantidade x Preço) de cada produto e soma tudo
     total_geral = sum(item['quantidade'] * item['preco'] for item in carrinho)
 
@@ -472,7 +488,7 @@ async def checkout(request: Request, db: Session = Depends(get_db), usuario: Usu
     pedido = Pedido(id_usuario=usuario.id, total=total, prazo_entrega=15) # Prazo de 15 dias inserido!
     db.add(pedido)
     db.commit()
-    db.refresh(pedido)  
+    db.refresh(pedido)
 
     # 2. Varre o carrinho e salva cada linha como um ItemPedido
     for item in carrinho:

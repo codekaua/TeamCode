@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BolsasBR - Luxury Collection</title>
-  <link rel="stylesheet" href="{{url_for('static', path='Pasta_css/stytle_loja4.css') }}" />
+  <link rel="stylesheet" href="{{url_for('static', path='Pasta_css/stytle_loja5.css') }}" />
 </head>
 
 <body>
@@ -207,13 +207,23 @@
           <div class="grid">
             {% for i in produtos %}
             <div class="item">
-              <a href="/produto/{{ i.id }}">
-                <img src="{{ i.imagem }}" alt="Sem foto" />
-              </a>
-              <a href="/produto/{{ i.id }}">
-                <h3>{{ i.nome }}</h3>
-              </a>
-              <p>R${{ '%.2f' % i.preco }}</p>
+              {% if i.quantidade > 0 %}
+                <a href="/produto/{{ i.id }}">
+                  <img src="{{ i.imagem }}" alt="Sem foto" />
+                </a>
+                <a href="/produto/{{ i.id }}">
+                  <h3>{{ i.nome }}</h3>
+                </a>
+                <p>R${{ '%.2f' % i.preco }}</p>
+              {% else %}
+                <a class="produtoIndisponivel" href="/produto/{{ i.id }}">
+                  <img src="/static/uploads/icones/produto-indisponivel.png" alt="Sem foto" />
+                </a>
+                <a href="/produto/{{ i.id }}">
+                  <h3>{{ i.nome }}</h3>
+                </a>
+                <p>R${{ '%.2f' % i.preco }}</p>
+              {% endif %}
             </div>
             {% endfor %}
           </div>
