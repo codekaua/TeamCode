@@ -27,7 +27,7 @@ from sqlalchemy.orm import Session
 from Model.conexaoDB import get_db, SessionLocal
 # get_db = injeção do SessionLocal na API
 
-from models import Produto, Usuario, ItemPedido, Pedido, Visita, Comentario, Carrinho
+from models import Produto, Usuario, ItemPedido, Pedido, Visita, update
 
 from Model.auth import gerar_hash_senha, verificar_senha, criar_token, verificar_token
 
@@ -546,6 +546,88 @@ def admin(request: Request, db: Session = Depends(get_db), admin_user: Usuario =
     total_acessos = db.query(Visita).count()
 
     return templates.TemplateResponse("admin.html", {"request": request, "usuario": admin_user, "usuarios": numerosUsuarios, "produtos": numeroProdutos, "acessos": total_acessos})
+
+# ----- Página Editar Produto -----
+@router.get('/admin/editar', response_class=HTMLResponse)
+async def listar_produto_editar(request: Request, admin_user: Usuario = Depends(admin_requerido), db: Session = Depends(get_db)):
+
+    # Busca a listagem de todos os produtos para mostrar na tabela
+    produtos = db.query(Produto).all()
+
+    return templates.TemplateResponse('admin_editar.html', {'request': request, 'usuario':admin_user, "produtos":produtos})
+
+# ----- Página Formulário Editar Produto por ID -----
+@router.get('/admin/editar/{id_produto}', response_class=HTMLResponse)
+async def editar_id(request: Request, id_produto: int, admin_user: Usuario = Depends(admin_requerido), db:Session=Depends(get_db)):
+    produto_selecionado = db.query(Produto).filter(Produto.id == id_produto).first()
+    
+    return templates.TemplateResponse('admin_editar_id.html', {'request': request, 'usuario':admin_user, "produto_existente":produto_selecionado})
+    
+# ----- Rota POST para Editar novo Produto no Banco e Discos -----
+@router.post("/admin/editar/{id}")
+def editar_produto(
+    request: Request,
+    id: int,
+    nome: str = Form(...),
+    preco: float = Form(...),
+    quantidade: int = Form(...),
+    categoria: str = Form(...),
+    cor: str = Form(...),
+    imagem: UploadFile | None = File(None),   # Na edição imagens são sempre opcionais
+    detalhe1: UploadFile | None = File(None),    
+    detalhe2: UploadFile | None = File(None),
+    detalhe3: UploadFile | None = File(None),
+    detalhe4: UploadFile | None = File(None),
+    db: Session = Depends(get_db)
+):
+    # Buscar o produto no Banco de Dados
+    produto_existente = db.query(Produto).filter(Produto.id == id).first()
+    
+    # Se alguém tentar editar um ID que não existe, manda de volta
+    if not produto_existente:
+        return RedirectResponse(url="/admin/produto?erro=produto_nao_encontrado", status_code=303)
+    
+    # Atualiza os dados de texto e números
+    produto_existente.nome = nome
+    produto_existente.preco = preco
+    produto_existente.quantidade = quantidade
+    produto_existente.categoria = categoria
+    produto_existente.cor = cor
+    
+    # Função auxiliar para salvar somente a imagem se o admin tiver enviado uma nova
+    def salvar_imagem_nova(arquivo_upload: UploadFile):
+        if arquivo_upload and arquivo_upload.filename: # Se enviou um arquivo de verdade
+            caminho = os.path.join(UPLOAD_DIR, arquivo_upload.filename)
+            with open(caminho, "wb") as f:
+                shutil.copyfileobj(arquivo_upload.file, f)
+            return arquivo_upload.filename
+        return None # Retorna None se não enviou nada 
+    
+    # Checa e atualiza cada imagem individualmente
+    nova_imagem = salvar_imagem_nova(imagem)
+    if nova_imagem:
+        produto_existente.imagem = nova_imagem # Só substitui se mandou imagem nova
+
+    nova_det1 = salvar_imagem_nova(detalhe1)
+    if nova_det1:
+        produto_existente.detalhe_1 = nova_det1
+
+    nova_det2 = salvar_imagem_nova(detalhe2)
+    if nova_det2:
+        produto_existente.detalhe_2 = nova_det2
+
+    nova_det3 = salvar_imagem_nova(detalhe3)
+    if nova_det3:
+        produto_existente.detalhe_3 = nova_det3
+
+    nova_det4 = salvar_imagem_nova(detalhe4)
+    if nova_det4:
+        produto_existente.detalhe_4 = nova_det4
+        
+    # Salva as alterações (Como já buscamos no banco, só fazer commit)
+    db.commit()
+
+    return RedirectResponse(url="/admin", status_code=303)
 
 # ----- Página Formulário Criar Produto -----
 @router.get('/admin/produto', response_class=HTMLResponse)

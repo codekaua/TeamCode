@@ -32,11 +32,13 @@
                 src="/static/uploads/img_header/sobre_nos.svg"
                 alt="Favoritos"
             /></a>
-            <a href="/carrinho"
-              ><img
-                src="/static/uploads/img_header/carrinho.svg"
-                alt="Carrinho"
-            /></a>
+            <a href="/carrinho" style="position: relative; display: inline-block;"> 
+              <img src="/static/uploads/img_header/carrinho.svg" alt="Carrinho" />
+              <span id="contador-carrinho">0</span>
+            </a>
+            <!-- script animação carrinho -->
+            <script src="{{url_for('static', path='js/carrinho.js') }}"></script>
+
             {% if not usuario %}
             <a href="/login"
               ><img src="/static/uploads/img_header/user.svg" alt="Usuário"
@@ -147,13 +149,5 @@
         </div>
       </footer>
     </main>
-    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
   </body>
-<<<<<<< HEAD
 </html>
-<<<<<<< HEAD
-=======
-=======
-</html>
->>>>>>> 2a1ad127e5384774ec0fa45c559220bc50f09336
->>>>>>> f66bd29386a5f335b0c5585174da94e3822e3d08

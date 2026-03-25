@@ -6,7 +6,7 @@
     <title>Checkout - Ecommerce</title>
     <link
       rel="stylesheet"
-      href="{{url_for('static', path='Pasta_css/style_checkout4.css') }}"
+      href="{{url_for('static', path='Pasta_css/style_checkout5.css') }}"
     />
   </head>
   <body>
@@ -29,9 +29,14 @@
               src="/static/uploads/img_header/sobre_nos.svg"
               alt="Favoritos"
           /></a>
-          <a href="/carrinho"
-            ><img src="/static/uploads/img_header/carrinho.svg" alt="Carrinho"
-          /></a>
+
+          <a href="/carrinho" style="position: relative; display: inline-block;">
+            <img src="/static/uploads/img_header/carrinho.svg" alt="Carrinho"/>
+            <span id="contador-carrinho">0</span>
+          </a>
+          <!-- script animação carrinho -->
+          <script src="{{url_for('static', path='js/carrinho.js') }}"></script>
+
           {% if not usuario %}
           <a href="/login"
             ><img src="/static/uploads/img_header/user.svg" alt="Usuário"
@@ -155,7 +160,6 @@
       </aside>
       {% endif %}
     </main>
-    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
     <script>
       // 1 Adiciona um "ouvinte" de evento (event listener) ao botão com id="btnCalcularFrete"
       // Ou seja, quando o botão for clicado, o código dentro da função será executado.

@@ -1,137 +1,124 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Página do Produto</title>
-    <link
-      rel="stylesheet"
-      href="{{url_for('static', path='Pasta_css/style_produto3.css') }}"
-    />
-  </head>
 
-  <body>
-    <header id="header-premium">
-      <div class="header-container">
-        <div class="header-left">
-          <div class="search-item">
-            <img src="/static/uploads/img_header/buscar.svg" alt="Buscar" />
-            <span>BUSCAR</span>
-          </div>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Página do Produto</title>
+  <link rel="stylesheet" href="{{url_for('static', path='Pasta_css/style_produto4.css') }}" />
+</head>
 
-        <div class="header-center">
-          <a href="/" class="logo">BolsasBR</a>
-        </div>
-
-        <div class="header-right">
-          <a href="/sobre"
-            ><img
-              src="/static/uploads/img_header/sobre_nos.svg"
-              alt="Favoritos"
-          /></a>
-          <a href="/carrinho"
-            ><img src="/static/uploads/img_header/carrinho.svg" alt="Carrinho"
-          /></a>
-          {% if not usuario %}
-          <a href="/login"
-            ><img src="/static/uploads/img_header/user.svg" alt="Usuário"
-          /></a>
-          {% else %}
-          <div class="perfil-menu-container">
-            <img
-              id="foto-perfil"
-              src="/static/uploads/img_header/user.svg"
-              alt="Usuário"
-              onclick="toggleMenu()"
-            />
-
-            <div id="menu-perfil" class="popup-menu">
-              <a href="/me/dados">Meus Dados</a>
-              <a href="/meus-pedidos">Meus Pedidos</a>
-              <a href="/logout">Sair</a>
-            </div>
-          </div>
-          <script src="{{url_for('static', path='js/animação_user.js') }}"></script>
-          {% endif %}
+<body>
+  <header id="header-premium">
+    <div class="header-container">
+      <div class="header-left">
+        <div class="search-item">
+          <img src="/static/uploads/img_header/buscar.svg" alt="Buscar" />
+          <span>BUSCAR</span>
         </div>
       </div>
-    </header>
 
-    <!-- Melhorado: Adicionado section com classe produto-section para melhor estrutura -->
-    <main id="container_main">
-      <section class="produto-section">
-        <div class="produto-container">
-          <!-- Galeria de imagens - MELHORADA -->
-          <div class="produto-imagens">
-            <div class="grid-imagens">
-              <img src="{{produto.detalhe_1}}" alt="detal1" />
-              <img src="{{produto.detalhe_2}}" alt="detal2" />
-              <img src="{{produto.detalhe_3}}" alt="detal3" />
-              <img src="{{produto.detalhe_4}}" alt="detal4" />
-            </div>
-          </div>
+      <div class="header-center">
+        <a href="/" class="logo">BolsasBR</a>
+      </div>
 
-          <!-- Informações do produto - MELHORADA -->
-          <div class="produto-info">
-            <h1 class="produto-nome">{{produto.nome}}</h1>
+      <div class="header-right">
+        <a href="/sobre"><img src="/static/uploads/img_header/sobre_nos.svg" alt="Favoritos" /></a>
+        <a href="/carrinho" style="position: relative; display: inline-block;">
+          <img src="/static/uploads/img_header/carrinho.svg" alt="Carrinho" />
+          <span id="contador-carrinho">0</span>
+        </a>
+        <!-- script animação carrinho -->
+        <script src="{{url_for('static', path='js/carrinho.js') }}"></script>
 
-            <!-- Preço em seção com melhor estrutura visual -->
-            <div class="preco-section">
-              <p class="produto-preco">R$ {{'%.0f' %produto.preco}}</p>
-              <p class="parcelamento">ou 4x de R$ 6.725 sem juros</p>
-            </div>
+        {% if not usuario %}
+        <a href="/login"><img src="/static/uploads/img_header/user.svg" alt="Usuário" /></a>
+        {% else %}
+        <div class="perfil-menu-container">
+          <img id="foto-perfil" src="/static/uploads/img_header/user.svg" alt="Usuário" onclick="toggleMenu()" />
 
-            <!-- Botão de compra - MELHORADO -->
-
-            <form
-              id="form-carrinho"
-              action="/carrinho/adicionar/{{produto.id}}"
-              method="post"
-            >
-              <button type="submit" class="btn-comprar">
-                Adicionar ao carrinho
-              </button>
-            </form>
-
-            <!-- Links extras - MELHORADA -->
-            <div class="produto-links">
-              <a href="#">✓ Frete padrão grátis</a>
-              <a href="#">✓ Devoluções gratuitas</a>
-            </div>
+          <div id="menu-perfil" class="popup-menu">
+            <a href="/me/dados">Meus Dados</a>
+            <a href="/meus-pedidos">Meus Pedidos</a>
+            <a href="/logout">Sair</a>
           </div>
         </div>
-      </section>
-    </main>
+        <script src="{{url_for('static', path='js/animação_user.js') }}"></script>
+        {% endif %}
+      </div>
+    </div>
+  </header>
 
-    <script>
-      const btnMais = document.getElementById("aumentar");
-      const btnMenos = document.getElementById("diminuir");
-      const inputQtd = document.getElementById("quantidade");
-      const inputHidden = document.getElementById("quantidade-hidden");
+  <!-- Melhorado: Adicionado section com classe produto-section para melhor estrutura -->
+  <main id="container_main">
+    <section class="produto-section">
+      <div class="produto-container">
+        <!-- Galeria de imagens - MELHORADA -->
+        <div class="produto-imagens">
+          <div class="grid-imagens">
+            <img src="{{produto.detalhe_1}}" alt="detal1" />
+            <img src="{{produto.detalhe_2}}" alt="detal2" />
+            <img src="{{produto.detalhe_3}}" alt="detal3" />
+            <img src="{{produto.detalhe_4}}" alt="detal4" />
+          </div>
+        </div>
 
-      btnMenos.addEventListener("click", () => {
-        let qtd = parseInt(inputQtd.value);
-        if (qtd > 1) {
-          inputQtd.value = qtd - 1;
-          inputHidden.value = inputQtd.value;
-        }
-      });
+        <!-- Informações do produto - MELHORADA -->
+        <div class="produto-info">
+          <h1 class="produto-nome">{{produto.nome}}</h1>
 
-      const stars = document.querySelectorAll(".star-label");
+          <!-- Preço em seção com melhor estrutura visual -->
+          <div class="preco-section">
+            <p class="produto-preco">R$ {{'%.0f' %produto.preco}}</p>
+            <p class="parcelamento">ou 4x de R$ 6.725 sem juros</p>
+          </div>
 
-      stars.forEach((star, index) => {
-        star.addEventListener("click", () => {
-          stars.forEach((s, i) => {
-            if (i <= index) {
-              s.classList.add("active");
-            } else {
-              s.classList.remove("active");
-            }
-          });
+          <!-- Botão de compra - MELHORADO -->
+
+          <form id="form-carrinho" action="/carrinho/adicionar/{{produto.id}}" method="post">
+            <button type="submit" class="btn-comprar">
+              Adicionar ao carrinho
+            </button>
+          </form>
+
+          <!-- Links extras - MELHORADA -->
+          <div class="produto-links">
+            <a href="#">✓ Frete padrão grátis</a>
+            <a href="#">✓ Devoluções gratuitas</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const btnMais = document.getElementById("aumentar");
+    const btnMenos = document.getElementById("diminuir");
+    const inputQtd = document.getElementById("quantidade");
+    const inputHidden = document.getElementById("quantidade-hidden");
+
+    btnMenos.addEventListener("click", () => {
+      let qtd = parseInt(inputQtd.value);
+      if (qtd > 1) {
+        inputQtd.value = qtd - 1;
+        inputHidden.value = inputQtd.value;
+      }
+    });
+
+    const stars = document.querySelectorAll(".star-label");
+
+    stars.forEach((star, index) => {
+      star.addEventListener("click", () => {
+        stars.forEach((s, i) => {
+          if (i <= index) {
+            s.classList.add("active");
+          } else {
+            s.classList.remove("active");
+          }
         });
       });
-    </script>
-    <script src="{{ url_for('static', path='js/carrinho.js') }}"></script>
-  </body>
+    });
+  </script>
+</body>
+
 </html>
