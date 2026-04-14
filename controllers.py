@@ -294,6 +294,36 @@ def listar_user(
         "cor_selecionada": cor
     })
 
+#API Produtos
+@router.get("/api/produtos")
+def listar_produtos(
+    categoria: str | None = Query(None),
+    cor: str | None = Query(None),
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obter_usuario_opcional)
+):
+
+    query = db.query(Produto)
+
+    if categoria:
+        query = query.filter(Produto.categoria == categoria)
+
+    if cor:
+        query = query.filter(Produto.cor == cor)
+
+    produtos = query.all()
+
+    return [
+        {
+            "id": p.id,
+            "nome": p.nome,
+            "categoria": p.categoria,
+            "cor": p.cor,
+            "preco": p.preco
+        }
+        for p in produtos
+    ]
+
 # Rota para listar único produto (Detalhes do produto)
 @router.get('/produto/{id_produto}', response_class=HTMLResponse)
 async def detalhe(request: Request, id_produto: int, db: Session = Depends(get_db), usuario: Usuario = Depends(obter_usuario_opcional)):
