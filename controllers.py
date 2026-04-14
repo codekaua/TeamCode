@@ -319,7 +319,8 @@ def listar_produtos(
             "nome": p.nome,
             "categoria": p.categoria,
             "cor": p.cor,
-            "preco": p.preco
+            "preco": p.preco,
+            "imagem": p.imagem
         }
         for p in produtos
     ]
