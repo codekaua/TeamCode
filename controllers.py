@@ -6,7 +6,7 @@ from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPExc
 # File = Função para gravar caminho da imagem
 # Depends = Dependência do banco de dados sqlite #pip install python-multipart
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 # HTMLResponse = Resposta do html, get, post, put, delete
@@ -56,6 +56,15 @@ CEP_LOJA = "03008020"  # cep SENAI FRANCISCO MATARAZZO
 # ==========================================================
 # MODELOS PYDANTIC
 # ==========================================================
+
+class LoginSchema(BaseModel):
+    email: EmailStr
+    senha: str 
+    
+class CadastroSchema(BaseModel):
+    nome: str
+    email: EmailStr
+    senha: str
 
 # Modelo de dados esperado do front-end (JSON) para atualizar quantidades no carrinho
 class AtualizarCarrinho(BaseModel):
@@ -293,37 +302,6 @@ def listar_user(
         "categoria_selecionada": categoria,
         "cor_selecionada": cor
     })
-
-#API Produtos
-@router.get("/api/produtos")
-def listar_produtos(
-    categoria: str | None = Query(None),
-    cor: str | None = Query(None),
-    db: Session = Depends(get_db),
-    usuario: Usuario = Depends(obter_usuario_opcional)
-):
-
-    query = db.query(Produto)
-
-    if categoria:
-        query = query.filter(Produto.categoria == categoria)
-
-    if cor:
-        query = query.filter(Produto.cor == cor)
-
-    produtos = query.all()
-
-    return [
-        {
-            "id": p.id,
-            "nome": p.nome,
-            "categoria": p.categoria,
-            "cor": p.cor,
-            "preco": p.preco,
-            "imagem": p.imagem
-        }
-        for p in produtos
-    ]
 
 # Rota para listar único produto (Detalhes do produto)
 @router.get('/produto/{id_produto}', response_class=HTMLResponse)
@@ -801,3 +779,83 @@ def calcular_frete(
         "prazo_estimado_dias": prazo_estimado,
         "status": "Simulação concluída"
     }
+
+# ==========================================================
+# ROTAS EM JSON (para o react Native)
+# ==========================================================
+
+#API Listar Produtos
+@router.get("/api/produtos")
+def listar_produtos(
+    categoria: str | None = Query(None),
+    cor: str | None = Query(None),
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obter_usuario_opcional)
+):
+
+    query = db.query(Produto)
+
+    if categoria:
+        query = query.filter(Produto.categoria == categoria)
+
+    if cor:
+        query = query.filter(Produto.cor == cor)
+
+    produtos = query.all()
+
+    return [
+        {
+            "id": p.id,
+            "nome": p.nome,
+            "categoria": p.categoria,
+            "cor": p.cor,
+            "preco": p.preco,
+            "imagem": p.imagem
+        }
+        for p in produtos
+    ]
+    
+# Login
+@router.post("/api/login")
+async def api_login(dados: LoginSchema, db: Session = Depends(get_db)):
+    usuario = db.query(Usuario).filter(Usuario.email == dados.email).first()
+    
+    if not usuario: 
+        return JSONResponse({"mensagem": "Usuário não encontrado"}, status_code=401)
+    
+    try:
+        if not verificar_senha(dados.senha, usuario.senha):
+            return JSONResponse({"mensagem": "Senha incorreta."}, status_code=401)
+    except Exception as e:
+        return JSONResponse({"mensagem": "Erro interno."}, status_code=500)
+    
+    # Gera o token
+    token_data = {"sub": usuario.email}
+    if usuario.is_admin:
+        token_data["is_admin"] = True
+        
+    token = criar_token(token_data)
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "is_admin": usuario.is_admin
+    }
+    
+# Cadastro
+@router.post('/api/register')
+async def api_cadastrar(dados: CadastroSchema, db: Session = Depends(get_db)):
+    # Verifica se já existe
+    usuario_existente = db.query(Usuario).filter(Usuario.email == dados.email).first()
+    if usuario_existente:
+        return JSONResponse({'mensagem': 'E-mail já cadastrado'}, status_code=400)
+    
+    senha_hash = gerar_hash_senha(dados.senha)
+    
+    novo_usuario = Usuario(nome=dados.nome, email=dados.email, senha=senha_hash)
+    db.add(novo_usuario)
+    db.commit()
+    db.refresh(novo_usuario)
+    
+    # Retorna sucesso para o app saber que pode ir para a tela de login
+    return {"mensagem": "Usuário cadastrado com sucesso!"}
