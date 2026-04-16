@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title='MVC Produtos')
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
-# Configuração do CORS
+# # Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
