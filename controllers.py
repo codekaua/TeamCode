@@ -815,6 +815,24 @@ def listar_produtos(
         for p in produtos
     ]
     
+# Rotas Detalhe do produto
+@router.get('/api/produtos/{id_produto}')
+async def detalhe(id_produto: int, db:Session = Depends(get_db)):
+    
+    produto = db.query(Produto).filter(Produto.id == id_produto).first()
+    
+    # Se o produto não existir no banco, retorna um erro 404 (Not Found)
+    if not produto:
+        raise HTTPException(status_code=404, detail="Produto não encontrado")
+    
+    return {
+        "id": produto.id,
+        "nome": produto.nome,
+        "preco": produto.preco,
+        "imagem": produto.imagem, # ou o nome da coluna de imagem no seu banco
+        "quantidade": produto.quantidade
+    }
+    
 # Login
 @router.post("/api/login")
 async def api_login(dados: LoginSchema, db: Session = Depends(get_db)):
@@ -862,19 +880,6 @@ async def api_cadastrar(dados: CadastroSchema, db: Session = Depends(get_db)):
     except Exception as e:
         print("ERRO BACKEND:", e)
         return JSONResponse({'mensagem': 'Erro interno', 'erro': str(e)}, status_code=500)
-# @router.post('/api/register')
-# async def api_cadastrar(dados: CadastroSchema, db: Session = Depends(get_db)):
-#     # Verifica se já existe
-#     usuario_existente = db.query(Usuario).filter(Usuario.email == dados.email).first()
-#     if usuario_existente:
-#         return JSONResponse({'mensagem': 'E-mail já cadastrado'}, status_code=400)
-    
-#     senha_hash = gerar_hash_senha(dados.senha)
-    
-#     novo_usuario = Usuario(nome=dados.nome, email=dados.email, senha=senha_hash)
-#     db.add(novo_usuario)
-#     db.commit()
-#     db.refresh(novo_usuario)
-    
-#     # Retorna sucesso para o app saber que pode ir para a tela de login
-#     return {"mensagem": "Usuário cadastrado com sucesso!"}
+
+
+
