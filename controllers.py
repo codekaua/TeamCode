@@ -46,7 +46,21 @@ UPLOAD_DIR = "static/uploads"  # sem a barra inicial
 os.makedirs(UPLOAD_DIR, exist_ok=True)  # cria a pasta se não existir)
 
 # Carrinho simples em memória (Dicionário Global)
-# Formato: { id_usuario: [{"id": 1, "nome": "...", "preco": 100, "quantidade": 1}] }
+# Formato: 
+# { 
+#    id_usuario_1: [
+#        {"id_produto": 1,
+#         "nome": "...", 
+#         "preco": 100, 
+#         "quantidade": 1}
+#    ],
+#    id_usuario_2: [
+#        {"id_produto": 3,
+#         "nome": "...", 
+#         "preco": 100, 
+#         "quantidade": 2}
+#    ],
+# }
 carrinhos = {}
 
 # cep fixo da loja
@@ -784,7 +798,7 @@ def calcular_frete(
 # ROTAS EM JSON (para o react Native)
 # ==========================================================
 
-#API Listar Produtos
+#Rota Listar Produtos
 @router.get("/api/produtos")
 def listar_produtos(
     categoria: str | None = Query(None),
@@ -886,5 +900,14 @@ async def api_cadastrar(dados: CadastroSchema, db: Session = Depends(get_db)):
         print("ERRO BACKEND:", e)
         return JSONResponse({'mensagem': 'Erro interno', 'erro': str(e)}, status_code=500)
 
+# Rotas do carrinho
+@router.get("api/carrinho")
+async def ver_carrinho(usuario: Usuario = Depends(usuario_logado)):
+    # Pega a lista de produtos do carrinho daquele ID no dicionário. Se não existir, retorna lista vazia [].
+    carrinho = carrinhos.get(usuario.id, [])
 
+    return {
+        "carrinho": carrinho,
+        "usuario": usuario.id
+    }
 
