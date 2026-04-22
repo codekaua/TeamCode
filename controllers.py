@@ -829,7 +829,12 @@ async def detalhe(id_produto: int, db:Session = Depends(get_db)):
         "id": produto.id,
         "nome": produto.nome,
         "preco": produto.preco,
-        "imagem": produto.imagem, # ou o nome da coluna de imagem no seu banco
+        "imagem": produto.imagem,
+        "detalhe1": produto.detalhe_1,
+        "detalhe2": produto.detalhe_2,
+        "detalhe3": produto.detalhe_3,
+        "detalhe4": produto.detalhe_4,
+        "categoria": produto.categoria,
         "quantidade": produto.quantidade
     }
     
