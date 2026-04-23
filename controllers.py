@@ -798,9 +798,11 @@ def calcular_frete(
 # ROTAS EM JSON (para o react Native)
 # ==========================================================
 
-#Rota Listar Produtos
+# --------------------
+#Rota Listar Produtos e Detalhe do Produto
+# --------------------
 @router.get("/api/produtos")
-def listar_produtos(
+def listar_produtos_json(
     categoria: str | None = Query(None),
     cor: str | None = Query(None),
     db: Session = Depends(get_db),
@@ -828,10 +830,9 @@ def listar_produtos(
         }
         for p in produtos
     ]
-    
-# Rotas Detalhe do produto
+
 @router.get('/api/produtos/{id_produto}')
-async def detalhe(id_produto: int, db:Session = Depends(get_db)):
+async def detalhe_json(id_produto: int, db:Session = Depends(get_db)):
     
     produto = db.query(Produto).filter(Produto.id == id_produto).first()
     
@@ -852,7 +853,9 @@ async def detalhe(id_produto: int, db:Session = Depends(get_db)):
         "quantidade": produto.quantidade
     }
     
-# Login
+# --------------------
+# Rotas de Login e Cadastro
+# --------------------
 @router.post("/api/login")
 async def api_login(dados: LoginSchema, db: Session = Depends(get_db)):
     usuario = db.query(Usuario).filter(Usuario.email == dados.email).first()
@@ -879,7 +882,6 @@ async def api_login(dados: LoginSchema, db: Session = Depends(get_db)):
         "is_admin": usuario.is_admin
     }
     
-# Cadastro
 @router.post('/api/register')
 async def api_cadastrar(dados: CadastroSchema, db: Session = Depends(get_db)):
     try:
@@ -900,9 +902,11 @@ async def api_cadastrar(dados: CadastroSchema, db: Session = Depends(get_db)):
         print("ERRO BACKEND:", e)
         return JSONResponse({'mensagem': 'Erro interno', 'erro': str(e)}, status_code=500)
 
+# --------------------
 # Rotas do carrinho
+# --------------------
 @router.get("api/carrinho")
-async def ver_carrinho(usuario: Usuario = Depends(usuario_logado)):
+async def ver_carrinho_json(usuario: Usuario = Depends(usuario_logado)):
     # Pega a lista de produtos do carrinho daquele ID no dicionário. Se não existir, retorna lista vazia [].
     carrinho = carrinhos.get(usuario.id, [])
 
@@ -911,3 +915,42 @@ async def ver_carrinho(usuario: Usuario = Depends(usuario_logado)):
         "usuario": usuario.id
     }
 
+@router.post("api/adicionar/carrinho/{id_produto}")
+async def adicionar_Carrinho_json(
+    id_produto: int,
+    quantidade: int = Form(1), # Recebe a quantidade por form, padrão é 1
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(usuario_logado)
+):
+    # Procura se o produto que ele quer adicionar realmente existe no banco
+    produto = db.query(Produto).filter(Produto.id == id_produto).first()
+    if not produto:
+        return JSONResponse({"mensagem": "Produto não existe"}, status_code=401)
+
+    # Recupera o carrinho atual
+    carrinho = carrinhos.get(usuario.id, [])
+
+    # Adiciona um novo dicionário com as informações estáticas do produto na lista do carrinho
+    carrinho.append({
+        "id": produto.id,
+        "nome": produto.nome,
+        "preco": float(produto.preco),
+        "quantidade": quantidade,
+        "imagem": produto.imagem,
+        "categoria": produto.categoria
+    })
+    
+    # Salva a lista atualizada de volta no dicionário global de carrinhos
+    carrinhos[usuario.id] = carrinho
+
+@router.post("api/carrinho/remover/{id_produto}")
+async def remover_carrinho_json(id_produto: int, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_logado)):
+    produto = db.query(Produto).filter(Produto.id == id_produto).first()
+
+    carrinho = carrinhos.get(usuario.id, [])
+
+    # List Comprehension: Recria a lista do carrinho, mantendo APENAS os itens cujo ID seja diferente do removido
+    carrinho = [item for item in carrinho if item["id"] != id_produto]
+    
+    # Atualiza o dicionário global
+    carrinhos[usuario.id] = carrinho
