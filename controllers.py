@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPException, Query, status, Header
 # APIRouter = Rotas API para o front,
 # request = Requisição HTTP,
 # Form = Formulário para criar e editar
@@ -125,6 +125,36 @@ def usuario_logado(request: Request, db: Session = Depends(get_db)):
     # Se chegou até aqui, está tudo certo! Retorna o usuário.
     return usuario
 
+def usuario_logado_api(
+    request: Request,
+    authorization: str = Header(None),
+    db: Session = Depends(get_db)
+):
+    token = None
+
+    # 1. tenta header (mobile)
+    if authorization:
+        token = authorization.replace("Bearer ", "")
+
+    # 2. fallback cookie (web)
+    if not token:
+        token = request.cookies.get("token")
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Não autenticado")
+
+    payload = verificar_token(token)
+
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token inválido ou expirado")
+
+    email = payload.get("sub")
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+
+    if not usuario:
+        raise HTTPException(status_code=401, detail="Usuário não encontrado")
+
+    return usuario
 
 # 1. Dependência para páginas públicas (Home, Sobre, Produto)
 def obter_usuario_opcional(request: Request, db: Session = Depends(get_db)):
@@ -879,7 +909,8 @@ async def api_login(dados: LoginSchema, db: Session = Depends(get_db)):
     return {
         "access_token": token,
         "token_type": "bearer",
-        "is_admin": usuario.is_admin
+        "is_admin": usuario.is_admin,
+        "nome": usuario.nome
     }
     
 @router.post('/api/register')
@@ -899,14 +930,15 @@ async def api_cadastrar(dados: CadastroSchema, db: Session = Depends(get_db)):
         return {"mensagem": "Usuário cadastrado com sucesso!"}
     
     except Exception as e:
+        db.rollback()
         print("ERRO BACKEND:", e)
         return JSONResponse({'mensagem': 'Erro interno', 'erro': str(e)}, status_code=500)
 
 # --------------------
 # Rotas do carrinho
 # --------------------
-@router.get("api/carrinho")
-async def ver_carrinho_json(usuario: Usuario = Depends(usuario_logado)):
+@router.get("/api/carrinho")
+async def ver_carrinho_json(usuario: Usuario = Depends(usuario_logado_api)):
     # Pega a lista de produtos do carrinho daquele ID no dicionário. Se não existir, retorna lista vazia [].
     carrinho = carrinhos.get(usuario.id, [])
 
@@ -915,36 +947,52 @@ async def ver_carrinho_json(usuario: Usuario = Depends(usuario_logado)):
         "usuario": usuario.id
     }
 
-@router.post("api/adicionar/carrinho/{id_produto}")
+@router.post("/api/adicionar/carrinho/{id_produto}")
 async def adicionar_Carrinho_json(
     id_produto: int,
-    quantidade: int = Form(1), # Recebe a quantidade por form, padrão é 1
+    quantidade: int = 1,
     db: Session = Depends(get_db),
-    usuario: Usuario = Depends(usuario_logado)
+    usuario: Usuario = Depends(usuario_logado_api)
 ):
-    # Procura se o produto que ele quer adicionar realmente existe no banco
     produto = db.query(Produto).filter(Produto.id == id_produto).first()
-    if not produto:
-        return JSONResponse({"mensagem": "Produto não existe"}, status_code=401)
 
-    # Recupera o carrinho atual
+    if not produto:
+        return JSONResponse(
+            {"mensagem": "Produto não existe"},
+            status_code=401
+        )
+
     carrinho = carrinhos.get(usuario.id, [])
 
-    # Adiciona um novo dicionário com as informações estáticas do produto na lista do carrinho
-    carrinho.append({
-        "id": produto.id,
-        "nome": produto.nome,
-        "preco": float(produto.preco),
-        "quantidade": quantidade,
-        "imagem": produto.imagem,
-        "categoria": produto.categoria
-    })
-    
-    # Salva a lista atualizada de volta no dicionário global de carrinhos
+    # verifica se o produto já existe
+    produto_existente = None
+
+    for item in carrinho:
+        if item["id"] == produto.id:
+            produto_existente = item
+            break
+
+    # se existir soma quantidade
+    if produto_existente:
+        produto_existente["quantidade"] += quantidade
+
+    # se não existir cria novo item
+    else:
+        carrinho.append({
+            "id": produto.id,
+            "nome": produto.nome,
+            "preco": float(produto.preco),
+            "quantidade": quantidade,
+            "imagem": produto.imagem,
+            "categoria": produto.categoria
+        })
+
     carrinhos[usuario.id] = carrinho
 
-@router.post("api/carrinho/remover/{id_produto}")
-async def remover_carrinho_json(id_produto: int, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_logado)):
+    return {"mensagem": "Produto adicionado ao carrinho"}
+
+@router.post("/api/carrinho/remover/{id_produto}")
+async def remover_carrinho_json(id_produto: int, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_logado_api)):
     produto = db.query(Produto).filter(Produto.id == id_produto).first()
 
     carrinho = carrinhos.get(usuario.id, [])
@@ -954,3 +1002,5 @@ async def remover_carrinho_json(id_produto: int, db: Session = Depends(get_db), 
     
     # Atualiza o dicionário global
     carrinhos[usuario.id] = carrinho
+
+    return {"mensagem": "Produto removido"}
