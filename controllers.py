@@ -1004,3 +1004,57 @@ async def remover_carrinho_json(id_produto: int, db: Session = Depends(get_db), 
     carrinhos[usuario.id] = carrinho
 
     return {"mensagem": "Produto removido"}
+
+@router.put("/api/carrinho/{id_produto}/aumentar")
+async def aumentar_quantidade(
+    id_produto: int,
+    usuario: Usuario = Depends(usuario_logado_api)
+):
+    carrinho = carrinhos.get(usuario.id, [])
+
+    for item in carrinho:
+        if item["id"] == id_produto:
+
+            item["quantidade"] += 1
+
+            return {
+                "mensagem": "Quantidade aumentada",
+                "quantidade": item["quantidade"]
+            }
+
+    return JSONResponse(
+        {"mensagem": "Produto não encontrado"},
+        status_code=404
+    )
+
+
+@router.put("/api/carrinho/{id_produto}/diminuir")
+async def diminuir_quantidade(
+    id_produto: int,
+    usuario: Usuario = Depends(usuario_logado_api)
+):
+    carrinho = carrinhos.get(usuario.id, [])
+
+    for item in carrinho:
+        if item["id"] == id_produto:
+
+            # se tiver mais de 1, diminui
+            if item["quantidade"] > 1:
+                item["quantidade"] -= 1
+
+                return {
+                    "mensagem": "Quantidade diminuída",
+                    "quantidade": item["quantidade"]
+                }
+
+            # se tiver 1, remove o produto
+            carrinho.remove(item)
+
+            return {
+                "mensagem": "Produto removido"
+            }
+
+    return JSONResponse(
+        {"mensagem": "Produto não encontrado"},
+        status_code=404
+    )
